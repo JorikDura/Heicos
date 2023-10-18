@@ -5,4 +5,5 @@
     <string name="download_all">Download all</string>
     <string name="to_last_picture">To last picture</string>
     <string name="error_message">Error</string>
+    <string name="nothing_found">Nothing found T_T</string>
 </resources>

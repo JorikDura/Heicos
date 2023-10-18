@@ -8,8 +8,8 @@ class GetCosplaysUseCase @Inject constructor(
     private val repository: CosplayRepository
 ) {
 
-    suspend operator fun invoke(page: Int = 1): List<CosplayPreview> {
-        return repository.getCosplays(page)
+    suspend operator fun invoke(page: Int = 1, query: String = ""): List<CosplayPreview> {
+        return repository.getCosplays(page, query)
     }
 
 }

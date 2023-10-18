@@ -6,13 +6,13 @@ import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
-    override suspend fun getCosplays(page: Int): List<CosplayPreview> {
+    override suspend fun getCosplays(page: Int, query: String): List<CosplayPreview> {
         val result = mutableListOf<CosplayPreview>()
 
-        val url = if (page != 1) {
-            "https://hentai-cosplays.com/search/page/$page/"
+        val url = if (query.isNotEmpty()) {
+            "https://hentai-cosplays.com/search/keyword/$query/page/$page/"
         } else {
-            "https://hentai-cosplays.com/search/"
+            "https://hentai-cosplays.com/search/page/$page/"
         }
         val doc = Jsoup.connect(url).get()
         val imageList = doc.select("div.image-list-item")

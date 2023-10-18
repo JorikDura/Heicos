@@ -105,4 +105,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     //jsoup
     implementation("org.jsoup:jsoup:1.16.1")
+    //material
+    implementation("androidx.compose.material3:material3:1.1.2")
 }

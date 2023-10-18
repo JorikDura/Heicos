@@ -5,4 +5,5 @@
     <string name="download_all">Скачать все</string>
     <string name="to_last_picture">К последней картинке</string>
     <string name="error_message">Ошибка</string>
+    <string name="nothing_found">Ничего не найдено T_T</string>
 </resources>

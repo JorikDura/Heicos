@@ -18,6 +18,7 @@ class CosplaysScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var page = 1
+    var searchQuery = ""
     private var cosplaysCache = mutableListOf<CosplayPreview>()
 
     var screenState by mutableStateOf(CosplaysScreenState(isLoading = true))
@@ -26,7 +27,26 @@ class CosplaysScreenViewModel @Inject constructor(
         loadNextData()
     }
 
-    fun loadNextData(loadingNextData: Boolean = false) {
+    fun onEvent(event: CosplaysScreenEvents) {
+        when (event) {
+            CosplaysScreenEvents.LoadNextData -> {
+                loadNextData(true)
+            }
+
+            CosplaysScreenEvents.Reset -> {
+                resetValues()
+                loadNextData()
+            }
+
+            is CosplaysScreenEvents.Search -> {
+                resetValues()
+                searchQuery = event.query
+                loadNextData()
+            }
+        }
+    }
+
+    private fun loadNextData(loadingNextData: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             if (loadingNextData) {
                 screenState = screenState.copy(
@@ -36,18 +56,37 @@ class CosplaysScreenViewModel @Inject constructor(
                 )
             }
 
-            val result = getCosplaysUseCase(page)
+            val result = getCosplaysUseCase(page, searchQuery)
 
-            if (result.isNotEmpty()) {
+            screenState = if (result.isNotEmpty()) {
                 cosplaysCache.addAll(result)
-                screenState = screenState.copy(
+                screenState.copy(
                     isLoading = false,
                     nextDataIsLoading = false,
+                    cosplays = cosplaysCache
+                )
+            } else {
+                screenState.copy(
+                    isLoading = false,
+                    isEmpty = cosplaysCache.isEmpty(),
+                    nextDataIsLoading = false,
+                    nextDataIsEmpty = true,
                     cosplays = cosplaysCache
                 )
             }
 
             page++
         }
+    }
+
+    private fun resetValues() {
+        cosplaysCache.clear()
+        searchQuery = ""
+        page = 1
+        screenState = screenState.copy(
+            isLoading = true,
+            isEmpty = false,
+            nextDataIsEmpty = false
+        )
     }
 }
