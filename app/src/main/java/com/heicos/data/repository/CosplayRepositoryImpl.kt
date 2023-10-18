@@ -1,0 +1,58 @@
+package com.heicos.data.repository
+
+import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.repository.CosplayRepository
+import org.jsoup.Jsoup
+import javax.inject.Inject
+
+class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
+    override suspend fun getCosplays(page: Int): List<CosplayPreview> {
+        val result = mutableListOf<CosplayPreview>()
+
+        val url = if (page != 1) {
+            "https://hentai-cosplays.com/search/page/$page/"
+        } else {
+            "https://hentai-cosplays.com/search/"
+        }
+        val doc = Jsoup.connect(url).get()
+        val imageList = doc.select("div.image-list-item")
+        for (i in 0 until imageList.size) {
+            val pageUrl = imageList.select("div.image-list-item-image")
+                .select("a")
+                .eq(i)
+                .attr("href")
+                .replace("image", "story")
+
+            var image = imageList.select("div.image-list-item-image")
+                .select("img")
+                .eq(i)
+                .attr("src")
+                .replace("/p=160x200", "")
+
+            if (!image.contains("https")) {
+                image = image.replace("http", "https")
+            }
+
+            val title = doc.select("p.image-list-item-title")
+                .select("a")
+                .eq(i)
+                .text()
+
+            val date = doc.select("p.image-list-item-regist-date")
+                .select("span")
+                .eq(i)
+                .text()
+
+            result.add(
+                CosplayPreview(
+                    pageUrl = pageUrl,
+                    previewUrl = image,
+                    title = title,
+                    date = date
+                )
+            )
+        }
+        return result
+    }
+
+}
