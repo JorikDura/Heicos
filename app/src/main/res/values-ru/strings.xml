@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="open_in_browser">Открыть в браузере</string>
+    <string name="download">Скачать</string>
+    <string name="download_all">Скачать все</string>
+    <string name="to_last_picture">К последней картинке</string>
+    <string name="error_message">Ошибка</string>
+</resources>

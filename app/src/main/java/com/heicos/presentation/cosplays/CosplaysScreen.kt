@@ -17,12 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @RootNavGraph(start = true)
 @Destination
 @Composable
 fun CosplaysScreen(
-    viewModel: CosplaysScreenViewModel = hiltViewModel()
+    viewModel: CosplaysScreenViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator
 ) {
     val gridCells = 2
     val state = viewModel.screenState
@@ -41,7 +43,10 @@ fun CosplaysScreen(
             columns = GridCells.Fixed(gridCells)
         ) {
             items(state.cosplays) { cosplay ->
-                CosplayScreenItem(cosplay = cosplay)
+                CosplayScreenItem(
+                    cosplay = cosplay,
+                    navigator = navigator
+                )
             }
             item(
                 span = { GridItemSpan(gridCells) }

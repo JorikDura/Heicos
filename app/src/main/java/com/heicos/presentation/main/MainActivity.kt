@@ -12,7 +12,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.heicos.presentation.cosplays.NavGraphs
+import com.heicos.presentation.NavGraphs
 import com.heicos.presentation.util.rememberAnimations
 import com.heicos.ui.theme.HeicosTheme
 import com.ramcosta.composedestinations.DestinationsNavHost

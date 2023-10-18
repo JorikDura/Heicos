@@ -17,7 +17,13 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
         val doc = Jsoup.connect(url).get()
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
-            val pageUrl = imageList.select("div.image-list-item-image")
+            val pageUrl =
+                "https://hentai-cosplays.com/" + imageList.select("div.image-list-item-image")
+                    .select("a")
+                    .eq(i)
+                    .attr("href")
+
+            val storyPageUrl = imageList.select("div.image-list-item-image")
                 .select("a")
                 .eq(i)
                 .attr("href")
@@ -46,12 +52,31 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
             result.add(
                 CosplayPreview(
                     pageUrl = pageUrl,
+                    storyPageUrl = storyPageUrl,
                     previewUrl = image,
                     title = title,
                     date = date
                 )
             )
         }
+        return result
+    }
+
+    override suspend fun getFullCosplay(url: String): List<String> {
+        val result = mutableListOf<String>()
+        val fullUrl = "https://hentai-cosplays.com$url"
+        val doc = Jsoup.connect(fullUrl).get()
+
+        doc.select("amp-img.auto-style").forEach { image ->
+            var imageUrl = image.attr("src")
+
+            if (!imageUrl.contains("https")) {
+                imageUrl = imageUrl.replace("http", "https")
+            }
+
+            result.add(imageUrl)
+        }
+
         return result
     }
 
