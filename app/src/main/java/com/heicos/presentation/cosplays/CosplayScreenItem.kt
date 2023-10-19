@@ -25,26 +25,18 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
-import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun CosplayScreenItem(
     modifier: Modifier = Modifier,
     cosplay: CosplayPreview,
-    navigator: DestinationsNavigator
+    onItemClickListener: () -> Unit
 ) {
     Card(
         modifier = modifier
             .padding(4.dp)
-            .clickable {
-                navigator.navigate(
-                    FullCosplayScreenDestination(
-                        cosplayPreview = cosplay
-                    )
-                )
-            }
+            .clickable { onItemClickListener() }
             .fillMaxWidth(),
         shape = RoundedCornerShape(5.dp)
     ) {

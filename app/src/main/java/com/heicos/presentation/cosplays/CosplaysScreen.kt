@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.heicos.R
+import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -130,7 +131,13 @@ fun CosplaysScreen(
                 items(state.cosplays) { cosplay ->
                     CosplayScreenItem(
                         cosplay = cosplay,
-                        navigator = navigator
+                        onItemClickListener = {
+                            navigator.navigate(
+                                FullCosplayScreenDestination(
+                                    cosplayPreview = cosplay
+                                )
+                            )
+                        }
                     )
                 }
                 item(
