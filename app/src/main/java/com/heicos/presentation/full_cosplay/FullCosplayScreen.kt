@@ -51,6 +51,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -67,13 +68,7 @@ fun FullCosplayScreen(
     val state = viewModel.screenState
 
     if (state.isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+        LoadingScreen()
     } else {
         val context = LocalContext.current
         var expanded by remember { mutableStateOf(false) }
