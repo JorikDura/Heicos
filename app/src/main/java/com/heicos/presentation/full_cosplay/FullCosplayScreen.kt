@@ -2,6 +2,7 @@ package com.heicos.presentation.full_cosplay
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -53,6 +54,7 @@ import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -60,7 +62,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun FullCosplayScreen(
     cosplayPreview: CosplayPreview,
-    viewModel: FullCosplayScreenViewModel = hiltViewModel()
+    viewModel: FullCosplayScreenViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator
 ) {
     val state = viewModel.screenState
 
@@ -75,7 +78,7 @@ fun FullCosplayScreen(
     } else {
         val context = LocalContext.current
         var expanded by remember { mutableStateOf(false) }
-        var isSliderMode by remember { mutableStateOf(false) }
+        var isPagerMode by remember { mutableStateOf(false) }
         val pagerState = rememberPagerState {
             state.cosplaysPhotoUrl.size
         }
@@ -100,7 +103,7 @@ fun FullCosplayScreen(
                 )
                 Row {
                     IconButton(
-                        onClick = { isSliderMode = !isSliderMode }
+                        onClick = { isPagerMode = !isPagerMode }
                     ) {
                         Icon(imageVector = Icons.Default.List, contentDescription = null)
                     }
@@ -138,7 +141,7 @@ fun FullCosplayScreen(
                                 expanded = false
                             }
                         )
-                        if (isSliderMode) {
+                        if (isPagerMode) {
                             Divider()
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.download)) },
@@ -164,19 +167,14 @@ fun FullCosplayScreen(
             AnimatedContent(
                 modifier = Modifier
                     .weight(1f),
-                targetState = isSliderMode,
+                targetState = isPagerMode,
                 label = "sliderMode"
             ) { isSlider ->
                 if (isSlider) {
                     HorizontalPager(
                         state = pagerState
                     ) { index ->
-                        Box(
-                            modifier = Modifier
-                                .clickable { isSliderMode = !isSliderMode }
-                        ) {
-                            CosplayImageItem(data = state.cosplaysPhotoUrl[index])
-                        }
+                        CosplayImageItem(data = state.cosplaysPhotoUrl[index])
                     }
                 } else {
                     LazyVerticalGrid(
@@ -194,7 +192,7 @@ fun FullCosplayScreen(
                                         val cosplayIndex =
                                             state.cosplaysPhotoUrl.indexOf(cosplayUrl)
                                         scope.launch { pagerState.scrollToPage(cosplayIndex) }
-                                        isSliderMode = !isSliderMode
+                                        isPagerMode = !isPagerMode
                                     }
                             ) {
                                 CosplayImageItem(data = cosplayUrl, scale = ContentScale.Crop)
@@ -212,12 +210,21 @@ fun FullCosplayScreen(
             ) {
                 Text(text = cosplayPreview.date)
                 AnimatedVisibility(
-                    visible = isSliderMode,
+                    visible = isPagerMode,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
                     Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
                 }
+            }
+        }
+
+        //custom back handler — when screen in pager mode, then just off that
+        BackHandler {
+            if (isPagerMode) {
+                isPagerMode = !isPagerMode
+            } else {
+                navigator.popBackStack()
             }
         }
     }
