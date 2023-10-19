@@ -216,6 +216,7 @@ fun FullCosplayScreen(
         //custom back handler — when screen in pager mode, then just off that
         BackHandler {
             if (isPagerMode) {
+                viewModel.onEvent(FullCosplayScreenEvents.ScrollToItem(pagerState.currentPage))
                 isPagerMode = !isPagerMode
             } else {
                 navigator.popBackStack()

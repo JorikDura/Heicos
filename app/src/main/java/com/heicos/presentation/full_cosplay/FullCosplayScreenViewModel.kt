@@ -52,6 +52,10 @@ class FullCosplayScreenViewModel @Inject constructor(
             is FullCosplayScreenEvents.DownloadImage -> {
                 downloadImage(event.url)
             }
+
+            is FullCosplayScreenEvents.ScrollToItem -> {
+                scrollToItem(event.index)
+            }
         }
     }
 
@@ -67,6 +71,10 @@ class FullCosplayScreenViewModel @Inject constructor(
                 cosplayDownloader.downloadFile(imageUrl)
             }
         }
+    }
+
+    private fun scrollToItem(index: Int) {
+        viewModelScope.launch { gridState.scrollToItem(index) }
     }
 
     private fun getArgument(): String {
