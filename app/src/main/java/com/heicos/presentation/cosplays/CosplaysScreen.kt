@@ -142,7 +142,8 @@ fun CosplaysScreen(
 
             LazyVerticalGrid(
                 contentPadding = PaddingValues(top = 72.dp),
-                columns = GridCells.Fixed(gridCells)
+                columns = GridCells.Fixed(gridCells),
+                state = viewModel.gridState
             ) {
                 items(state.cosplays) { cosplay ->
                     CosplayScreenItem(

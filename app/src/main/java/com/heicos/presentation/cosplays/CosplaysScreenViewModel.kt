@@ -1,5 +1,7 @@
 package com.heicos.presentation.cosplays
 
+import androidx.compose.foundation.gestures.stopScroll
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,9 +20,10 @@ class CosplaysScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var page = 1
-    var searchQuery = ""
     private var cosplaysCache = mutableListOf<CosplayPreview>()
 
+    var searchQuery = ""
+    var gridState = LazyGridState()
     var screenState by mutableStateOf(CosplaysScreenState(isLoading = true))
 
     init {
@@ -80,6 +83,10 @@ class CosplaysScreenViewModel @Inject constructor(
     }
 
     private fun resetValues() {
+        if (gridState.isScrollInProgress) {
+            viewModelScope.launch { gridState.stopScroll() }
+        }
+        gridState = LazyGridState()
         cosplaysCache.clear()
         searchQuery = ""
         page = 1
