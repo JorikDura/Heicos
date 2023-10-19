@@ -11,4 +11,5 @@
     <string name="connection_lost">Соединение потеряно</string>
     <string name="internet_recommendation">Друг, попробуй включить интернет, вдруг поможет.</string>
     <string name="cosplays_list_size_message">Всего:</string>
+    <string name="search">Поиск</string>
 </resources>

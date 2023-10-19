@@ -79,7 +79,7 @@ fun CosplaysScreen(
                 searchBarStatus = it
             },
             placeholder = {
-                Text(text = "Search")
+                Text(text = stringResource(id = R.string.search))
             },
             leadingIcon = {
                 Icon(
