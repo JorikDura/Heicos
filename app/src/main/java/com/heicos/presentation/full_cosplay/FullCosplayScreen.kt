@@ -128,7 +128,7 @@ fun FullCosplayScreen(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.download_all)) },
                             onClick = {
-                                viewModel.downloadAllImages()
+                                viewModel.onEvent(FullCosplayScreenEvents.DownloadAllImages)
                                 expanded = false
                             }
                         )
@@ -137,7 +137,11 @@ fun FullCosplayScreen(
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.download)) },
                                 onClick = {
-                                    viewModel.downloadImage(state.cosplaysPhotoUrl[pagerState.currentPage])
+                                    viewModel.onEvent(
+                                        FullCosplayScreenEvents.DownloadImage(
+                                            state.cosplaysPhotoUrl[pagerState.currentPage]
+                                        )
+                                    )
                                     expanded = false
                                 }
                             )

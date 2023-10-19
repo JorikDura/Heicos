@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heicos.utils.manager.CosplayDownloader
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetFullCosplayUseCase
+import com.heicos.utils.manager.CosplayDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +25,7 @@ class FullCosplayScreenViewModel @Inject constructor(
     var screenState by mutableStateOf(FullCosplayScreenState(isLoading = true))
 
     val gridState = LazyGridState()
+
     init {
         loadCosplays()
     }
@@ -42,22 +43,34 @@ class FullCosplayScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getArgument(): String {
-        return savedState.get<CosplayPreview>("cosplayPreview")?.storyPageUrl
-            ?: throw IllegalArgumentException("Argument can't be null")
+    fun onEvent(event: FullCosplayScreenEvents) {
+        when (event) {
+            FullCosplayScreenEvents.DownloadAllImages -> {
+                downloadAllImages()
+            }
+
+            is FullCosplayScreenEvents.DownloadImage -> {
+                downloadImage(event.url)
+            }
+        }
     }
 
-    fun downloadImage(url: String) {
+    private fun downloadImage(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
             cosplayDownloader.downloadFile(url)
         }
     }
 
-    fun downloadAllImages() {
+    private fun downloadAllImages() {
         viewModelScope.launch(Dispatchers.IO) {
             screenState.cosplaysPhotoUrl.forEach { imageUrl ->
                 cosplayDownloader.downloadFile(imageUrl)
             }
         }
+    }
+
+    private fun getArgument(): String {
+        return savedState.get<CosplayPreview>("cosplayPreview")?.storyPageUrl
+            ?: throw IllegalArgumentException("Argument can't be null")
     }
 }
