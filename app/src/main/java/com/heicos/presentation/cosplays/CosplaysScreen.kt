@@ -1,5 +1,6 @@
 package com.heicos.presentation.cosplays
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,17 +11,20 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,6 +60,9 @@ fun CosplaysScreen(
     var searchBarStatus by remember {
         mutableStateOf(false)
     }
+    val historySearch = remember {
+        mutableStateListOf<String>()
+    }
 
     Box(
         modifier = Modifier
@@ -73,6 +80,9 @@ fun CosplaysScreen(
             onSearch = {
                 viewModel.onEvent(CosplaysScreenEvents.Search(query))
                 searchBarStatus = false
+                if (!historySearch.contains(query)) {
+                    historySearch.add(query)
+                }
             },
             active = searchBarStatus,
             onActiveChange = {
@@ -104,7 +114,17 @@ fun CosplaysScreen(
                 }
             }
         ) {
-            //empty
+            historySearch.reversed().forEach { historyItem ->
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { query = historyItem },
+                    headlineContent = { Text(text = historyItem) },
+                    leadingContent = {
+                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                    }
+                )
+            }
         }
 
         if (state.isLoading) {
