@@ -1,5 +1,6 @@
 package com.heicos.presentation.full_cosplay
 
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     var screenState by mutableStateOf(FullCosplayScreenState(isLoading = true))
 
+    val gridState = LazyGridState()
     init {
         loadCosplays()
     }
