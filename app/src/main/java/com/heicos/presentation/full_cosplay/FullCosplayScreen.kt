@@ -4,9 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -101,19 +100,11 @@ fun FullCosplayScreen(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row {
-                    IconButton(
-                        onClick = { isPagerMode = !isPagerMode }
-                    ) {
-                        Icon(imageVector = Icons.Default.List, contentDescription = null)
-                    }
-                    IconButton(
-                        onClick = { expanded = true }
-                    ) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                    }
+                IconButton(
+                    onClick = { expanded = true }
+                ) {
+                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
                 }
-
                 Box(
                     modifier = Modifier
                         .padding(top = 42.dp),
@@ -169,8 +160,8 @@ fun FullCosplayScreen(
                     .weight(1f),
                 targetState = isPagerMode,
                 label = "sliderMode"
-            ) { isSlider ->
-                if (isSlider) {
+            ) { isPager ->
+                if (isPager) {
                     HorizontalPager(
                         state = pagerState
                     ) { index ->
@@ -209,12 +200,16 @@ fun FullCosplayScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = cosplayPreview.date)
-                AnimatedVisibility(
-                    visible = isPagerMode,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
+                AnimatedContent(
+                    targetState = isPagerMode,
+                    label = "cosplaysListSize",
+                    transitionSpec = { fadeIn() togetherWith fadeOut() }
+                ) { isPager ->
+                    if (isPager) {
+                        Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
+                    } else {
+                        Text(text = "${stringResource(id = R.string.cosplays_list_size_message)} ${state.cosplaysPhotoUrl.size}")
+                    }
                 }
             }
         }
