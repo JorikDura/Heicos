@@ -9,10 +9,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.heicos.R
+import com.heicos.utils.manager.ConnectivityObserver
 import com.heicos.presentation.NavGraphs
+import com.heicos.presentation.connection.ConnectionScreen
 import com.heicos.presentation.util.rememberAnimations
 import com.heicos.ui.theme.HeicosTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -43,10 +49,29 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DestinationsNavHost(
-                        navGraph = NavGraphs.root,
-                        engine = rememberAnimations()
-                    )
+                    val viewModel: MainScreenViewModel = hiltViewModel()
+                    val connectionStatus =
+                        viewModel.state.collectAsState(initial = ConnectivityObserver.Status.Unavailable)
+                    when (connectionStatus.value) {
+                        ConnectivityObserver.Status.Available -> {
+                            DestinationsNavHost(
+                                navGraph = NavGraphs.root,
+                                engine = rememberAnimations()
+                            )
+                        }
+
+                        ConnectivityObserver.Status.Unavailable -> {
+                            ConnectionScreen(message = stringResource(id = R.string.connection_unavailable))
+                        }
+
+                        ConnectivityObserver.Status.Losing -> {
+                            ConnectionScreen(message = stringResource(id = R.string.connection_losing))
+                        }
+
+                        ConnectivityObserver.Status.Lost -> {
+                            ConnectionScreen(message = stringResource(id = R.string.connection_lost))
+                        }
+                    }
                 }
             }
         }

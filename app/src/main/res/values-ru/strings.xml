@@ -6,4 +6,8 @@
     <string name="to_last_picture">К последней картинке</string>
     <string name="error_message">Ошибка</string>
     <string name="nothing_found">Ничего не найдено T_T</string>
+    <string name="connection_unavailable">Нет интернета</string>
+    <string name="connection_losing">Потеря соединения</string>
+    <string name="connection_lost">Соединение потеряно</string>
+    <string name="internet_recommendation">Друг, попробуй включить интернет, вдруг поможет.</string>
 </resources>

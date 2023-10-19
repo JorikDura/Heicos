@@ -1,4 +1,4 @@
-package com.heicos.domain.manager
+package com.heicos.utils.manager
 
 import android.app.DownloadManager
 import android.content.Context

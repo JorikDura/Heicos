@@ -6,4 +6,8 @@
     <string name="to_last_picture">To last picture</string>
     <string name="error_message">Error</string>
     <string name="nothing_found">Nothing found T_T</string>
+    <string name="connection_unavailable">Connection unavailable</string>
+    <string name="connection_losing">Losing connection</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="internet_recommendation">You know what? Try to turn on your internet.</string>
 </resources>

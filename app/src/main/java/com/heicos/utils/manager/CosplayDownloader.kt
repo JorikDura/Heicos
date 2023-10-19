@@ -1,4 +1,4 @@
-package com.heicos.domain.manager
+package com.heicos.utils.manager
 
 interface CosplayDownloader {
     fun downloadFile(url: String): Long

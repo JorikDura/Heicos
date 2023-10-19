@@ -1,8 +1,10 @@
 package com.heicos.di
 
 import com.heicos.data.repository.CosplayRepositoryImpl
-import com.heicos.domain.manager.CosplayDownloaderImpl
-import com.heicos.domain.manager.CosplayDownloader
+import com.heicos.utils.manager.ConnectivityObserver
+import com.heicos.utils.manager.CosplayDownloaderImpl
+import com.heicos.utils.manager.CosplayDownloader
+import com.heicos.utils.manager.NetworkConnectivityObserver
 import com.heicos.domain.repository.CosplayRepository
 import dagger.Binds
 import dagger.Module
@@ -26,4 +28,9 @@ abstract class RepositoryModule {
         downloader: CosplayDownloaderImpl
     ): CosplayDownloader
 
+    @Singleton
+    @Binds
+    abstract fun bindConnectivityObserver(
+        observer: NetworkConnectivityObserver
+    ): ConnectivityObserver
 }

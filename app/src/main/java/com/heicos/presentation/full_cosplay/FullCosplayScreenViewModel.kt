@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heicos.domain.manager.CosplayDownloader
+import com.heicos.utils.manager.CosplayDownloader
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetFullCosplayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
