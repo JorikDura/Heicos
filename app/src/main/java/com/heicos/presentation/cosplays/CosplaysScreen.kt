@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,9 +59,6 @@ fun CosplaysScreen(
     var searchBarStatus by remember {
         mutableStateOf(false)
     }
-    val historySearch = remember {
-        mutableStateListOf<String>()
-    }
 
     Box(
         modifier = Modifier
@@ -80,8 +76,8 @@ fun CosplaysScreen(
             onSearch = {
                 viewModel.onEvent(CosplaysScreenEvents.Search(query))
                 searchBarStatus = false
-                if (!historySearch.contains(query)) {
-                    historySearch.add(query)
+                if (!viewModel.historySearch.contains(query)) {
+                    viewModel.onEvent(CosplaysScreenEvents.AddHistoryQuery(query))
                 }
             },
             active = searchBarStatus,
@@ -114,7 +110,7 @@ fun CosplaysScreen(
                 }
             }
         ) {
-            historySearch.reversed().forEach { historyItem ->
+            viewModel.historySearch.reversed().forEach { historyItem ->
                 ListItem(
                     modifier = Modifier
                         .fillMaxWidth()

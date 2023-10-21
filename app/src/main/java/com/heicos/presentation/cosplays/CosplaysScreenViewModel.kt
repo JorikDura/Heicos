@@ -22,6 +22,9 @@ class CosplaysScreenViewModel @Inject constructor(
     private var page = 1
     private var cosplaysCache = mutableListOf<CosplayPreview>()
 
+    private val _historySearch = mutableListOf<String>()
+    val historySearch: List<String> = _historySearch
+
     var searchQuery = ""
     var gridState = LazyGridState()
     var screenState by mutableStateOf(CosplaysScreenState(isLoading = true))
@@ -45,6 +48,10 @@ class CosplaysScreenViewModel @Inject constructor(
                 resetValues()
                 searchQuery = event.query
                 loadNextData()
+            }
+
+            is CosplaysScreenEvents.AddHistoryQuery -> {
+                _historySearch.add(event.query)
             }
         }
     }
