@@ -1,5 +1,9 @@
 package com.heicos.presentation.cosplays
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -94,19 +98,22 @@ fun CosplaysScreen(
                 )
             },
             trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (query.isNotEmpty()) {
+                AnimatedVisibility(
+                    visible = query.isNotEmpty(),
+                    enter = fadeIn(tween(300)),
+                    exit = fadeOut(tween(300))
+                ) {
+                    IconButton(
+                        onClick = {
                             query = ""
-                            searchBarStatus = false
                             viewModel.onEvent(CosplaysScreenEvents.Reset)
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Clear,
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Clear,
-                        contentDescription = null
-                    )
                 }
             }
         ) {

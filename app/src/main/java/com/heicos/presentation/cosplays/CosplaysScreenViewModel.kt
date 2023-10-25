@@ -40,6 +40,9 @@ class CosplaysScreenViewModel @Inject constructor(
             }
 
             CosplaysScreenEvents.Reset -> {
+                if(searchQuery.isEmpty())
+                    return
+
                 resetValues()
                 loadNextData()
             }
