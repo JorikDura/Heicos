@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
@@ -87,14 +88,17 @@ fun FullCosplayScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                SelectionContainer(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 12.dp),
-                    text = cosplayPreview.title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                ) {
+                    Text(
+                        text = cosplayPreview.title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 IconButton(
                     onClick = { expanded = true }
                 ) {
