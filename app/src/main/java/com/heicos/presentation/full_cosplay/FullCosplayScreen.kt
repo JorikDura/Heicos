@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import coil.size.Dimension
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.LoadingScreen
@@ -189,7 +190,7 @@ fun FullCosplayScreen(
                                         isPagerMode = !isPagerMode
                                     }
                             ) {
-                                CosplayImageItem(data = cosplayUrl, scale = ContentScale.Crop)
+                                CosplayImageItem(data = cosplayUrl)
                             }
                         }
                     }
@@ -241,6 +242,7 @@ fun CosplayImageItem(
             .data(data)
             .addHeader("User-Agent", USER_AGENT_MOZILLA)
             .crossfade(true)
+            .size(Dimension.Undefined, Dimension.Pixels(1920))
             .build(),
         contentDescription = null,
         loading = {
