@@ -51,8 +51,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val viewModel: MainScreenViewModel = hiltViewModel()
                     val connectionStatus =
-                        viewModel.state.collectAsState(initial = ConnectivityObserver.Status.Unavailable)
+                        viewModel.state.collectAsState(initial = ConnectivityObserver.Status.Initial)
                     when (connectionStatus.value) {
+                        ConnectivityObserver.Status.Initial -> {
+
+                        }
+
                         ConnectivityObserver.Status.Available -> {
                             DestinationsNavHost(
                                 navGraph = NavGraphs.root,
