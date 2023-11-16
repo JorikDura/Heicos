@@ -2,12 +2,14 @@ package com.heicos.presentation.full_cosplay
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION.SDK_INT
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +50,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.SubcomposeAsyncImage
+import coil.ImageLoader
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Dimension
 import com.heicos.R
@@ -235,26 +241,31 @@ fun CosplayImageItem(
     data: String,
     scale: ContentScale = ContentScale.None
 ) {
-    SubcomposeAsyncImage(
-        modifier = Modifier
-            .fillMaxSize(),
+    val imageLoader = ImageLoader.Builder(LocalContext.current)
+        .components {
+            if (SDK_INT >= 28) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }
+        .build()
+
+    val imagePainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(data)
             .addHeader("User-Agent", USER_AGENT_MOZILLA)
             .crossfade(true)
             .size(Dimension.Undefined, Dimension.Pixels(1920))
             .build(),
-        contentDescription = null,
-        loading = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        },
-        error = {
+        imageLoader = imageLoader
+    )
+
+    when(imagePainter.state) {
+        AsyncImagePainter.State.Empty -> {
+
+        }
+        is AsyncImagePainter.State.Error -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -262,7 +273,24 @@ fun CosplayImageItem(
             ) {
                 Text(text = stringResource(id = R.string.error_message))
             }
-        },
-        contentScale = scale
-    )
+        }
+        is AsyncImagePainter.State.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        is AsyncImagePainter.State.Success -> {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize(),
+                painter = imagePainter,
+                contentDescription = null,
+                contentScale = scale
+            )
+        }
+    }
 }
