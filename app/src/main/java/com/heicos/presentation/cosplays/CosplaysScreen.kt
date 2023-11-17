@@ -137,7 +137,7 @@ fun CosplaysScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
-                    headlineContent = { Text(text = "Delete") },
+                    headlineContent = { Text(text = stringResource(id = R.string.clean)) },
                     leadingContent = {
                         Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
                     }
