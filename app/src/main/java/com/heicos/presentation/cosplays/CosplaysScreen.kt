@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Search
@@ -80,7 +81,10 @@ fun CosplaysScreen(
             onSearch = {
                 viewModel.onEvent(CosplaysScreenEvents.Search(query))
                 searchBarStatus = false
-                if (!viewModel.historySearch.contains(query)) {
+                val queryContains = viewModel.historySearch.find { searchQuery ->
+                    searchQuery.query == query
+                }
+                if (queryContains == null) {
                     viewModel.onEvent(CosplaysScreenEvents.AddHistoryQuery(query))
                 }
             },
@@ -121,10 +125,21 @@ fun CosplaysScreen(
                 ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { query = historyItem },
-                    headlineContent = { Text(text = historyItem) },
+                        .clickable { query = historyItem.query },
+                    headlineContent = { Text(text = historyItem.query) },
                     leadingContent = {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                    }
+                )
+            }
+            if (viewModel.historySearch.isNotEmpty()) {
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
+                    headlineContent = { Text(text = "Delete") },
+                    leadingContent = {
+                        Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
                     }
                 )
             }

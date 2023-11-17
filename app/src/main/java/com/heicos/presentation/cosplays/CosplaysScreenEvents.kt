@@ -6,4 +6,5 @@ sealed class CosplaysScreenEvents {
     data class AddHistoryQuery(val query: String) : CosplaysScreenEvents()
     data object Reset : CosplaysScreenEvents()
     data object LoadNextData : CosplaysScreenEvents()
+    data object DeleteHistoryQuery: CosplaysScreenEvents()
 }
