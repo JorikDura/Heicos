@@ -1,5 +1,9 @@
 package com.heicos.presentation.cosplays
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,10 +14,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
@@ -34,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -64,6 +71,8 @@ fun CosplaysScreen(
     var searchBarStatus by remember {
         mutableStateOf(false)
     }
+
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -121,27 +130,31 @@ fun CosplaysScreen(
                 }
             }
         ) {
-            viewModel.historySearch.reversed().forEach { historyItem ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { query = historyItem.query },
-                    headlineContent = { Text(text = historyItem.query) },
-                    leadingContent = {
-                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+            LazyColumn {
+                items(viewModel.historySearch.reversed()) { historyItem ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { query = historyItem.query },
+                        headlineContent = { Text(text = historyItem.query) },
+                        leadingContent = {
+                            Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                        }
+                    )
+                }
+                if (viewModel.historySearch.isNotEmpty()) {
+                    item {
+                        ListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
+                            headlineContent = { Text(text = stringResource(id = R.string.clean)) },
+                            leadingContent = {
+                                Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
+                            }
+                        )
                     }
-                )
-            }
-            if (viewModel.historySearch.isNotEmpty()) {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
-                    headlineContent = { Text(text = stringResource(id = R.string.clean)) },
-                    leadingContent = {
-                        Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
-                    }
-                )
+                }
             }
         }
 
@@ -198,4 +211,27 @@ fun CosplaysScreen(
             }
         }
     }
+    BackHandler {
+        if (searchBarStatus) {
+            searchBarStatus = false
+            return@BackHandler
+        }
+        if (query.isNotEmpty()) {
+            query = ""
+            viewModel.onEvent(CosplaysScreenEvents.Reset)
+            return@BackHandler
+        }
+        context.getActivity()?.finish()
+    }
+}
+
+fun Context.getActivity(): ComponentActivity? {
+    var currentContext = this
+    while (currentContext is ContextWrapper) {
+        if (currentContext is ComponentActivity) {
+            return currentContext
+        }
+        currentContext = currentContext.baseContext
+    }
+    return null
 }
