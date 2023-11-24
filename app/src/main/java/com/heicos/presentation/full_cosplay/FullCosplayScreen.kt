@@ -196,7 +196,10 @@ fun FullCosplayScreen(
                                         isPagerMode = !isPagerMode
                                     }
                             ) {
-                                CosplayImageItem(data = cosplayUrl)
+                                CosplayImageItem(
+                                    data = cosplayUrl,
+                                    scale = ContentScale.Crop
+                                )
                             }
                         }
                     }
