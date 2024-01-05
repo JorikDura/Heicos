@@ -27,7 +27,7 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
                 .select("a")
                 .eq(i)
                 .attr("href")
-                .replace("image", "story")
+                .replaceFirst("image", "story")
 
             var image = imageList.select("div.image-list-item-image")
                 .select("img")
