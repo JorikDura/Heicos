@@ -107,6 +107,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.16.1")
     //material
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material:material:1.5.4")
     //room
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")

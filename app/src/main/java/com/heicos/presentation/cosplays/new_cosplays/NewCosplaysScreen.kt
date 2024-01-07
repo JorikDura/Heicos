@@ -1,8 +1,5 @@
-package com.heicos.presentation.cosplays
+package com.heicos.presentation.cosplays.new_cosplays
 
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -20,16 +17,21 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,22 +50,24 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.heicos.R
+import com.heicos.presentation.cosplays.CosplayScreenItem
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.heicos.presentation.util.LoadingScreen
+import com.heicos.presentation.util.getActivity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun CosplaysScreen(
-    viewModel: CosplaysScreenViewModel = hiltViewModel(),
+fun NewCosplaysScreen(
+    viewModel: NewCosplaysScreenViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
     val gridCells = 2
-    val state = viewModel.screenState
+    val state = viewModel.state
 
     var query by remember {
         mutableStateOf(viewModel.searchQuery)
@@ -71,11 +75,14 @@ fun CosplaysScreen(
     var searchBarStatus by remember {
         mutableStateOf(false)
     }
+    val pullRefreshState = rememberPullRefreshState(
+        state.isRefreshing, { viewModel.onEvent(NewCosplaysScreenEvents.Refresh) })
 
     val context = LocalContext.current
 
     Box(
         modifier = Modifier
+            .pullRefresh(pullRefreshState)
             .fillMaxWidth()
             .semantics { isTraversalGroup = true },
     ) {
@@ -88,13 +95,13 @@ fun CosplaysScreen(
                 query = it
             },
             onSearch = {
-                viewModel.onEvent(CosplaysScreenEvents.Search(query))
+                viewModel.onEvent(NewCosplaysScreenEvents.Search(query))
                 searchBarStatus = false
-                val queryContains = viewModel.historySearch.find { searchQuery ->
+                val queryContains = state.history.find { searchQuery ->
                     searchQuery.query == query
                 }
                 if (queryContains == null) {
-                    viewModel.onEvent(CosplaysScreenEvents.AddHistoryQuery(query))
+                    viewModel.onEvent(NewCosplaysScreenEvents.AddHistoryQuery(query))
                 }
             },
             active = searchBarStatus,
@@ -119,7 +126,7 @@ fun CosplaysScreen(
                     IconButton(
                         onClick = {
                             query = ""
-                            viewModel.onEvent(CosplaysScreenEvents.Reset)
+                            viewModel.onEvent(NewCosplaysScreenEvents.Reset)
                         }
                     ) {
                         Icon(
@@ -131,7 +138,7 @@ fun CosplaysScreen(
             }
         ) {
             LazyColumn {
-                items(viewModel.historySearch.reversed()) { historyItem ->
+                items(state.history.reversed()) { historyItem ->
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -142,12 +149,12 @@ fun CosplaysScreen(
                         }
                     )
                 }
-                if (viewModel.historySearch.isNotEmpty()) {
+                if (state.history.isNotEmpty()) {
                     item {
                         ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
+                                .clickable { viewModel.onEvent(NewCosplaysScreenEvents.DeleteHistoryQuery) },
                             headlineContent = { Text(text = stringResource(id = R.string.clean)) },
                             leadingContent = {
                                 Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
@@ -203,13 +210,22 @@ fun CosplaysScreen(
                     } else {
                         if (!state.nextDataIsEmpty) {
                             SideEffect {
-                                viewModel.onEvent(CosplaysScreenEvents.LoadNextData)
+                                viewModel.onEvent(NewCosplaysScreenEvents.LoadNextData)
                             }
                         }
                     }
                 }
             }
         }
+        PullRefreshIndicator(
+            modifier = Modifier
+                .padding(top = 72.dp)
+                .align(Alignment.TopCenter),
+            refreshing = state.isRefreshing,
+            state = pullRefreshState,
+            contentColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.background
+        )
     }
     BackHandler {
         if (searchBarStatus) {
@@ -218,20 +234,9 @@ fun CosplaysScreen(
         }
         if (query.isNotEmpty()) {
             query = ""
-            viewModel.onEvent(CosplaysScreenEvents.Reset)
+            viewModel.onEvent(NewCosplaysScreenEvents.Reset)
             return@BackHandler
         }
         context.getActivity()?.finish()
     }
-}
-
-fun Context.getActivity(): ComponentActivity? {
-    var currentContext = this
-    while (currentContext is ContextWrapper) {
-        if (currentContext is ComponentActivity) {
-            return currentContext
-        }
-        currentContext = currentContext.baseContext
-    }
-    return null
 }

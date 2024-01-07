@@ -13,4 +13,7 @@
     <string name="cosplays_list_size_message">Всего:</string>
     <string name="search">Поиск</string>
     <string name="clean">Очистить (*/ω＼*)</string>
+    <string name="navigation_item_recently">Недавние</string>
+    <string name="navigation_item_new">Новые</string>
+    <string name="navigation_item_ranking">Рейтинг</string>
 </resources>

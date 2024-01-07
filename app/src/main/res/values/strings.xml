@@ -13,4 +13,7 @@
     <string name="cosplays_list_size_message">Total:</string>
     <string name="search">Search</string>
     <string name="clean">Clean（*＾-＾*）</string>
+    <string name="navigation_item_recently">Recently</string>
+    <string name="navigation_item_new">New</string>
+    <string name="navigation_item_ranking">Ranking</string>
 </resources>

@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.SideEffect
@@ -14,13 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heicos.R
-import com.heicos.utils.manager.ConnectivityObserver
+import com.heicos.navigation.BottomBar
 import com.heicos.presentation.NavGraphs
 import com.heicos.presentation.connection.ConnectionScreen
 import com.heicos.presentation.util.rememberAnimations
 import com.heicos.ui.theme.HeicosTheme
+import com.heicos.utils.manager.ConnectivityObserver
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,10 +62,20 @@ class MainActivity : ComponentActivity() {
                         }
 
                         ConnectivityObserver.Status.Available -> {
-                            DestinationsNavHost(
-                                navGraph = NavGraphs.root,
-                                engine = rememberAnimations()
-                            )
+                            val navController = rememberNavController()
+
+                            Scaffold(
+                                bottomBar = {
+                                    BottomBar(navController)
+                                }
+                            ) { paddingValues ->
+                                DestinationsNavHost(
+                                    modifier = Modifier.padding(paddingValues),
+                                    navController = navController,
+                                    navGraph = NavGraphs.root,
+                                    engine = rememberAnimations()
+                                )
+                            }
                         }
 
                         ConnectivityObserver.Status.Unavailable -> {
