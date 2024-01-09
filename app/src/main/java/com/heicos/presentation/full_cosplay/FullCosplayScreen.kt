@@ -59,6 +59,7 @@ import coil.request.ImageRequest
 import coil.size.Dimension
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,167 +74,171 @@ fun FullCosplayScreen(
     viewModel: FullCosplayScreenViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
-    val state = viewModel.screenState
+    val state = viewModel.state
 
-    if (state.isLoading) {
-        LoadingScreen()
+    if (!state.message.isNullOrEmpty()) {
+        ErrorMessage(message = state.message)
     } else {
-        val context = LocalContext.current
-        var expanded by remember { mutableStateOf(false) }
-        var isPagerMode by remember { mutableStateOf(false) }
-        val pagerState = rememberPagerState {
-            state.cosplaysPhotoUrl.size
-        }
-        val scope = rememberCoroutineScope()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Row(
+        if (state.isLoading) {
+            LoadingScreen()
+        } else {
+            val context = LocalContext.current
+            var expanded by remember { mutableStateOf(false) }
+            var isPagerMode by remember { mutableStateOf(false) }
+            val pagerState = rememberPagerState {
+                state.cosplaysPhotoUrl.size
+            }
+            val scope = rememberCoroutineScope()
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
             ) {
-                SelectionContainer(
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp),
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = cosplayPreview.title,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                IconButton(
-                    onClick = { expanded = true }
-                ) {
-                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                }
-                Box(
-                    modifier = Modifier
-                        .padding(top = 42.dp),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                    SelectionContainer(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 12.dp),
                     ) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(id = R.string.open_in_browser)) },
-                            onClick = {
-                                Intent(Intent.ACTION_VIEW).also {
-                                    it.data = Uri.parse(cosplayPreview.pageUrl)
-                                    context.startActivity(it)
-                                }
-                                expanded = false
-                            }
+                        Text(
+                            text = cosplayPreview.title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                        Divider()
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(id = R.string.download_all)) },
-                            onClick = {
-                                viewModel.onEvent(FullCosplayScreenEvents.DownloadAllImages)
-                                expanded = false
-                            }
-                        )
-                        if (isPagerMode) {
-                            Divider()
+                    }
+                    IconButton(
+                        onClick = { expanded = true }
+                    ) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 42.dp),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(id = R.string.download)) },
+                                text = { Text(text = stringResource(id = R.string.open_in_browser)) },
                                 onClick = {
-                                    viewModel.onEvent(
-                                        FullCosplayScreenEvents.DownloadImage(
-                                            state.cosplaysPhotoUrl[pagerState.currentPage]
-                                        )
-                                    )
+                                    Intent(Intent.ACTION_VIEW).also {
+                                        it.data = Uri.parse(cosplayPreview.pageUrl)
+                                        context.startActivity(it)
+                                    }
                                     expanded = false
                                 }
                             )
                             Divider()
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(id = R.string.to_last_picture)) },
+                                text = { Text(text = stringResource(id = R.string.download_all)) },
                                 onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(state.cosplaysPhotoUrl.size)
-                                        expanded = false
-                                    }
+                                    viewModel.onEvent(FullCosplayScreenEvents.DownloadAllImages)
+                                    expanded = false
                                 }
                             )
-                        }
-                    }
-                }
-            }
-            AnimatedContent(
-                modifier = Modifier
-                    .weight(1f),
-                targetState = isPagerMode,
-                label = "sliderMode"
-            ) { isPager ->
-                if (isPager) {
-                    HorizontalPager(
-                        state = pagerState
-                    ) { index ->
-                        CosplayImageItem(data = state.cosplaysPhotoUrl[index])
-                    }
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        state = viewModel.gridState
-                    ) {
-                        items(state.cosplaysPhotoUrl) { cosplayUrl ->
-                            Box(
-                                modifier = Modifier
-                                    .padding(2.dp)
-                                    .height(250.dp)
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(7.dp))
-                                    .clickable {
-                                        val cosplayIndex =
-                                            state.cosplaysPhotoUrl.indexOf(cosplayUrl)
-                                        scope.launch { pagerState.scrollToPage(cosplayIndex) }
-                                        isPagerMode = !isPagerMode
+                            if (isPagerMode) {
+                                Divider()
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.download)) },
+                                    onClick = {
+                                        viewModel.onEvent(
+                                            FullCosplayScreenEvents.DownloadImage(
+                                                state.cosplaysPhotoUrl[pagerState.currentPage]
+                                            )
+                                        )
+                                        expanded = false
                                     }
-                            ) {
-                                CosplayImageItem(
-                                    data = cosplayUrl,
-                                    scale = ContentScale.Crop
+                                )
+                                Divider()
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.to_last_picture)) },
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(state.cosplaysPhotoUrl.size)
+                                            expanded = false
+                                        }
+                                    }
                                 )
                             }
                         }
                     }
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(start = 12.dp, end = 12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = cosplayPreview.date)
                 AnimatedContent(
+                    modifier = Modifier
+                        .weight(1f),
                     targetState = isPagerMode,
-                    label = "cosplaysListSize",
-                    transitionSpec = { fadeIn() togetherWith fadeOut() }
+                    label = "sliderMode"
                 ) { isPager ->
                     if (isPager) {
-                        Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
+                        HorizontalPager(
+                            state = pagerState
+                        ) { index ->
+                            CosplayImageItem(data = state.cosplaysPhotoUrl[index])
+                        }
                     } else {
-                        Text(text = "${stringResource(id = R.string.cosplays_list_size_message)} ${state.cosplaysPhotoUrl.size}")
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            state = viewModel.gridState
+                        ) {
+                            items(state.cosplaysPhotoUrl) { cosplayUrl ->
+                                Box(
+                                    modifier = Modifier
+                                        .padding(2.dp)
+                                        .height(250.dp)
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(7.dp))
+                                        .clickable {
+                                            val cosplayIndex =
+                                                state.cosplaysPhotoUrl.indexOf(cosplayUrl)
+                                            scope.launch { pagerState.scrollToPage(cosplayIndex) }
+                                            isPagerMode = !isPagerMode
+                                        }
+                                ) {
+                                    CosplayImageItem(
+                                        data = cosplayUrl,
+                                        scale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(start = 12.dp, end = 12.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = cosplayPreview.date)
+                    AnimatedContent(
+                        targetState = isPagerMode,
+                        label = "cosplaysListSize",
+                        transitionSpec = { fadeIn() togetherWith fadeOut() }
+                    ) { isPager ->
+                        if (isPager) {
+                            Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
+                        } else {
+                            Text(text = "${stringResource(id = R.string.cosplays_list_size_message)} ${state.cosplaysPhotoUrl.size}")
+                        }
                     }
                 }
             }
-        }
 
-        //custom back handler — when screen in pager mode, then just off that
-        BackHandler {
-            if (isPagerMode) {
-                viewModel.onEvent(FullCosplayScreenEvents.ScrollToItem(pagerState.currentPage))
-                isPagerMode = !isPagerMode
-            } else {
-                navigator.popBackStack()
+            //custom back handler — when screen in pager mode, then just off that
+            BackHandler {
+                if (isPagerMode) {
+                    viewModel.onEvent(FullCosplayScreenEvents.ScrollToItem(pagerState.currentPage))
+                    isPagerMode = !isPagerMode
+                } else {
+                    navigator.popBackStack()
+                }
             }
         }
     }
@@ -264,10 +269,11 @@ fun CosplayImageItem(
         imageLoader = imageLoader
     )
 
-    when(imagePainter.state) {
+    when (imagePainter.state) {
         AsyncImagePainter.State.Empty -> {
 
         }
+
         is AsyncImagePainter.State.Error -> {
             Box(
                 modifier = Modifier
@@ -277,6 +283,7 @@ fun CosplayImageItem(
                 Text(text = stringResource(id = R.string.error_message))
             }
         }
+
         is AsyncImagePainter.State.Loading -> {
             Box(
                 modifier = Modifier
@@ -286,6 +293,7 @@ fun CosplayImageItem(
                 CircularProgressIndicator()
             }
         }
+
         is AsyncImagePainter.State.Success -> {
             Image(
                 modifier = Modifier

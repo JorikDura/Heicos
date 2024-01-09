@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetFullCosplayUseCase
+import com.heicos.utils.Resource
 import com.heicos.utils.manager.CosplayDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,7 @@ class FullCosplayScreenViewModel @Inject constructor(
     private val savedState: SavedStateHandle
 ) : ViewModel() {
 
-    var screenState by mutableStateOf(FullCosplayScreenState(isLoading = true))
+    var state by mutableStateOf(FullCosplayScreenState(isLoading = true))
 
     val gridState = LazyGridState()
 
@@ -32,13 +33,29 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun loadCosplays() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getFullCosplayUseCase(getArgument())
+            val remoteData = getFullCosplayUseCase(getArgument())
 
-            if (result.isNotEmpty()) {
-                screenState = screenState.copy(
-                    isLoading = false,
-                    cosplaysPhotoUrl = result
-                )
+            remoteData.collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        state = state.copy(message = result.message)
+                    }
+
+                    is Resource.Loading -> Unit
+
+                    is Resource.Success -> {
+                        result.data?.let { data ->
+                            if (data.isNotEmpty()) {
+                                state = state.copy(
+                                    isLoading = false,
+                                    cosplaysPhotoUrl = data,
+                                    message = null
+                                )
+                            }
+                        }
+
+                    }
+                }
             }
         }
     }
@@ -67,7 +84,7 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun downloadAllImages() {
         viewModelScope.launch(Dispatchers.IO) {
-            screenState.cosplaysPhotoUrl.forEach { imageUrl ->
+            state.cosplaysPhotoUrl.forEach { imageUrl ->
                 cosplayDownloader.downloadFile(imageUrl)
             }
         }

@@ -3,6 +3,10 @@ package com.heicos.data.repository
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.repository.CosplayRepository
 import com.heicos.domain.util.CosplayType
+import com.heicos.utils.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
@@ -10,47 +14,145 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
     override suspend fun getCosplays(
         page: Int,
         cosplayType: CosplayType
-    ): List<CosplayPreview> {
-        when (cosplayType) {
-            CosplayType.New -> {
-                val url = "https://hentai-cosplays.com/search/page/$page/"
-                return getCosplaysFromUrl(url)
-            }
+    ): Flow<Resource<List<CosplayPreview>>> {
+        return flow {
+            emit(Resource.Loading(isLoading = true))
+            when (cosplayType) {
+                CosplayType.New -> {
+                    val url = "https://hentai-cosplays.com/search/page/$page/"
+                    val result = try {
+                        getCosplaysFromUrl(url)
+                    } catch (e: HttpStatusException) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    } catch (e: Exception) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    }
+                    result?.let {
+                        emit(Resource.Success(data = result))
+                    }
+                }
 
-            CosplayType.Ranking -> {
-                val url = "https://hentai-cosplays.com/ranking/page/$page/"
-                return getCosplaysFromUrl(url)
-            }
+                CosplayType.Ranking -> {
+                    val url = "https://hentai-cosplays.com/ranking/page/$page/"
+                    val result = try {
+                        getCosplaysFromUrl(url)
+                    } catch (e: HttpStatusException) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    } catch (e: Exception) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    }
+                    result?.let {
+                        emit(Resource.Success(data = result))
+                    }
+                }
 
-            CosplayType.Recently -> {
-                val url = "https://hentai-cosplays.com/recently/page/$page/"
-                return getCosplaysFromUrl(url)
-            }
+                CosplayType.Recently -> {
+                    val url = "https://hentai-cosplays.com/recently/page/$page/"
+                    val result = try {
+                        getCosplaysFromUrl(url)
+                    } catch (e: HttpStatusException) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    } catch (e: Exception) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    }
+                    result?.let {
+                        emit(Resource.Success(data = result))
+                    }
+                }
 
-            is CosplayType.Search -> {
-                val url =
-                    "https://hentai-cosplays.com/search/keyword/${cosplayType.query}/page/$page/"
-                return getCosplaysFromUrl(url)
+                is CosplayType.Search -> {
+                    val url =
+                        "https://hentai-cosplays.com/search/keyword/${cosplayType.query}/page/$page/"
+                    val result = try {
+                        getCosplaysFromUrl(url)
+                    } catch (e: HttpStatusException) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    } catch (e: Exception) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    }
+                    result?.let {
+                        emit(Resource.Success(data = result))
+                    }
+                }
             }
+            emit(Resource.Loading(isLoading = false))
         }
     }
 
-    override suspend fun getFullCosplay(url: String): List<String> {
-        val result = mutableListOf<String>()
-        val fullUrl = "https://hentai-cosplays.com$url"
-        val doc = Jsoup.connect(fullUrl).get()
+    override suspend fun getFullCosplay(url: String): Flow<Resource<List<String>>> {
+        return flow {
+            emit(Resource.Loading(isLoading = true))
+            try {
+                val result = mutableListOf<String>()
+                val fullUrl = "https://hentai-cosplays.com$url"
+                val doc = Jsoup.connect(fullUrl).get()
 
-        doc.select("amp-img.auto-style").forEach { image ->
-            var imageUrl = image.attr("src")
+                doc.select("amp-img.auto-style").forEach { image ->
+                    var imageUrl = image.attr("src")
 
-            if (!imageUrl.contains("https")) {
-                imageUrl = imageUrl.replace("http", "https")
+                    if (!imageUrl.contains("https")) {
+                        imageUrl = imageUrl.replace("http", "https")
+                    }
+
+                    result.add(imageUrl)
+                }
+
+                emit(Resource.Success(data = result))
+            } catch (e: HttpStatusException) {
+                emit(Resource.Error(message = e.message ?: ERROR_MESSAGE, data = emptyList()))
+            } catch (e: Exception) {
+                emit(Resource.Error(message = e.message ?: ERROR_MESSAGE, data = emptyList()))
             }
-
-            result.add(imageUrl)
+            emit(Resource.Loading(isLoading = false))
         }
-
-        return result
     }
 
     private fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
@@ -103,4 +205,7 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
         return result
     }
 
+    companion object {
+        private const val ERROR_MESSAGE = "Something bad happened"
+    }
 }

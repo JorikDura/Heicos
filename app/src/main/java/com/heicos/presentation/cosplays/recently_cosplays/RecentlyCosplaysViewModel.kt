@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetCosplaysUseCase
 import com.heicos.domain.util.CosplayType
+import com.heicos.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,35 +51,60 @@ class RecentlyCosplaysViewModel @Inject constructor(
                 state = state.copy(
                     isLoading = false,
                     nextDataIsLoading = true,
-                    cosplays = cosplaysCache
+                    cosplays = cosplaysCache,
+                    message = null
                 )
             }
 
-            val result = getCosplaysUseCase(
+            val remoteData = getCosplaysUseCase(
                 page = currentPage,
                 cosplayType = CosplayType.Recently
             )
 
-            state = if (result.isNotEmpty()) {
-                cosplaysCache.addAll(result)
-                state.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    nextDataIsLoading = false,
-                    cosplays = cosplaysCache
-                )
-            } else {
-                state.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    isEmpty = cosplaysCache.isEmpty(),
-                    nextDataIsLoading = false,
-                    nextDataIsEmpty = true,
-                    cosplays = cosplaysCache
-                )
-            }
+            remoteData.collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        state = state.copy(message = result.message)
+                    }
 
-            currentPage++
+                    is Resource.Loading -> {
+                        if (loadingNextData && result.isLoading) {
+                            state = state.copy(
+                                isLoading = false,
+                                nextDataIsLoading = true,
+                                cosplays = cosplaysCache,
+                                message = null
+                            )
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        result.data?.let { data ->
+                            state = if (data.isNotEmpty()) {
+                                cosplaysCache.addAll(data)
+                                state.copy(
+                                    isLoading = false,
+                                    isRefreshing = false,
+                                    nextDataIsLoading = false,
+                                    cosplays = cosplaysCache,
+                                    message = null
+                                )
+                            } else {
+                                state.copy(
+                                    isLoading = false,
+                                    isRefreshing = false,
+                                    isEmpty = cosplaysCache.isEmpty(),
+                                    nextDataIsLoading = false,
+                                    nextDataIsEmpty = true,
+                                    cosplays = cosplaysCache,
+                                    message = null
+                                )
+                            }
+                        }
+                        currentPage++
+                    }
+                }
+            }
         }
     }
 
@@ -90,7 +116,8 @@ class RecentlyCosplaysViewModel @Inject constructor(
         state = state.copy(
             isLoading = true,
             isEmpty = false,
-            nextDataIsEmpty = false
+            nextDataIsEmpty = false,
+            message = null
         )
         gridState = LazyGridState()
         cosplaysCache.clear()

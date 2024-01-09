@@ -8,5 +8,6 @@ data class RankingCosplaysState(
     val isRefreshing: Boolean = false,
     val nextDataIsLoading: Boolean = false,
     val nextDataIsEmpty: Boolean = false,
-    val cosplays: List<CosplayPreview> = emptyList()
+    val cosplays: List<CosplayPreview> = emptyList(),
+    val message: String? = null
 )
