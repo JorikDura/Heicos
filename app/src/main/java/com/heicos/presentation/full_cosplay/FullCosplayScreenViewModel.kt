@@ -33,7 +33,7 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun loadCosplays() {
         viewModelScope.launch(Dispatchers.IO) {
-            val remoteData = getFullCosplayUseCase(getArgument())
+            val remoteData = getFullCosplayUseCase(getCosplayStoryPageUrl())
 
             remoteData.collect { result ->
                 when (result) {
@@ -78,14 +78,15 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun downloadImage(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            cosplayDownloader.downloadFile(url)
+            cosplayDownloader.downloadFile(url, getCosplayTitle())
         }
     }
 
     private fun downloadAllImages() {
         viewModelScope.launch(Dispatchers.IO) {
+            val cosplayTitle = getCosplayTitle()
             state.cosplaysPhotoUrl.forEach { imageUrl ->
-                cosplayDownloader.downloadFile(imageUrl)
+                cosplayDownloader.downloadFile(imageUrl, cosplayTitle)
             }
         }
     }
@@ -94,8 +95,13 @@ class FullCosplayScreenViewModel @Inject constructor(
         viewModelScope.launch { gridState.scrollToItem(index) }
     }
 
-    private fun getArgument(): String {
+    private fun getCosplayStoryPageUrl(): String {
         return savedState.get<CosplayPreview>("cosplayPreview")?.storyPageUrl
+            ?: throw IllegalArgumentException("Argument can't be null")
+    }
+
+    private fun getCosplayTitle(): String {
+        return savedState.get<CosplayPreview>("cosplayPreview")?.title
             ?: throw IllegalArgumentException("Argument can't be null")
     }
 }

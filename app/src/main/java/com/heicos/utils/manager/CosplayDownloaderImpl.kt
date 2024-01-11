@@ -11,15 +11,19 @@ class CosplayDownloaderImpl @Inject constructor(
 ) : CosplayDownloader {
 
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
-    override fun downloadFile(url: String): Long {
-        val date = if (url.contains("video")) {
-            url.substringAfter("video/").substringBefore("/")
-        } else {
-            url.substringAfter("upload/").substringBefore("/")
-        }
-        val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
+    override fun downloadFile(url: String, name: String): Long {
         val fileType = url.reversed().substringBefore("/").reversed()
-        val fileName = "${id}_${date}_${fileType}"
+        val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
+        val fileName = if (name.isNotEmpty()) {
+            "${name}_${id}_${fileType}"
+        } else {
+            val date = if (url.contains("video")) {
+                url.substringAfter("video/").substringBefore("/")
+            } else {
+                url.substringAfter("upload/").substringBefore("/")
+            }
+            "${id}_${date}_${fileType}"
+        }
 
         val request = DownloadManager.Request(url.toUri())
             .setMimeType("image/jpeg")
