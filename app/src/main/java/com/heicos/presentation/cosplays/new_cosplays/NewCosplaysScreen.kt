@@ -54,6 +54,7 @@ import com.heicos.presentation.cosplays.CosplayScreenItem
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
+import com.heicos.presentation.util.SwipeToDeleteContainer
 import com.heicos.presentation.util.getActivity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -139,16 +140,27 @@ fun NewCosplaysScreen(
             }
         ) {
             LazyColumn {
-                items(state.history.reversed()) { historyItem ->
-                    ListItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { query = historyItem.query },
-                        headlineContent = { Text(text = historyItem.query) },
-                        leadingContent = {
-                            Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                items(
+                    items = state.history.reversed(),
+                    key = { it.id }
+                ) { historyItem ->
+                    SwipeToDeleteContainer(
+                        item = historyItem,
+                        onDelete = {
+                            viewModel.onEvent(NewCosplaysScreenEvents.DeleteSearchItem(historyItem))
                         }
-                    )
+                    ) { item ->
+                        ListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { query = item.query },
+                            headlineContent = { Text(text = historyItem.query) },
+                            leadingContent = {
+                                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                            }
+                        )
+                    }
+
                 }
                 if (state.history.isNotEmpty()) {
                     item {

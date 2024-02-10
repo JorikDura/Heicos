@@ -86,6 +86,12 @@ class NewCosplaysScreenViewModel @Inject constructor(
                     searchQueryDao.deleteAllSearchQueries()
                 }
             }
+
+            is NewCosplaysScreenEvents.DeleteSearchItem -> {
+                viewModelScope.launch {
+                    searchQueryDao.deleteById(event.searchItem)
+                }
+            }
         }
     }
 
