@@ -3,6 +3,7 @@
     <string name="open_in_browser">Open in browser</string>
     <string name="download">Download</string>
     <string name="download_all">Download all</string>
+    <string name="to_first_picture">To first picture</string>
     <string name="to_last_picture">To last picture</string>
     <string name="error_message">Error</string>
     <string name="nothing_found">Nothing found T_T</string>

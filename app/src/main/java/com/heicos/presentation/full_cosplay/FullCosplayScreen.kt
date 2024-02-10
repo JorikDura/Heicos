@@ -29,9 +29,9 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -134,7 +134,7 @@ fun FullCosplayScreen(
                                     expanded = false
                                 }
                             )
-                            Divider()
+                            HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.download_all)) },
                                 onClick = {
@@ -143,7 +143,7 @@ fun FullCosplayScreen(
                                 }
                             )
                             if (isPagerMode) {
-                                Divider()
+                                HorizontalDivider()
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(id = R.string.download)) },
                                     onClick = {
@@ -155,12 +155,23 @@ fun FullCosplayScreen(
                                         expanded = false
                                     }
                                 )
-                                Divider()
+                                HorizontalDivider()
+                                val currentPage = pagerState.currentPage + 1
                                 DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.to_last_picture)) },
+                                    text = {
+                                        Text(
+                                            text = stringResource(
+                                                id = if (currentPage == state.cosplaysPhotoUrl.size)
+                                                    R.string.to_first_picture
+                                                else R.string.to_last_picture
+                                            )
+                                        )
+                                    },
                                     onClick = {
                                         scope.launch {
-                                            pagerState.animateScrollToPage(state.cosplaysPhotoUrl.size)
+                                            if (currentPage == state.cosplaysPhotoUrl.size)
+                                                pagerState.animateScrollToPage(0)
+                                            else pagerState.animateScrollToPage(state.cosplaysPhotoUrl.size)
                                             expanded = false
                                         }
                                     }
