@@ -15,7 +15,7 @@ class CosplayDownloaderImpl @Inject constructor(
         val fileType = url.reversed().substringBefore("/").reversed()
         val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
         val fileName = if (name.isNotEmpty()) {
-            "${name}_${id}_${fileType}"
+            "${name}_${id}_${fileType}".replace("/", "-")
         } else {
             val date = if (url.contains("video")) {
                 url.substringAfter("video/").substringBefore("/")
@@ -29,7 +29,7 @@ class CosplayDownloaderImpl @Inject constructor(
             .setMimeType("image/jpeg")
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setTitle(fileName)
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, fileName)
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Heicos/$fileName")
 
         return downloadManager.enqueue(request)
     }
