@@ -10,4 +10,5 @@ sealed class NewCosplaysScreenEvents {
     data object Refresh : NewCosplaysScreenEvents()
     data object LoadNextData : NewCosplaysScreenEvents()
     data object DeleteHistoryQuery : NewCosplaysScreenEvents()
+    data object LoadSearchQueries : NewCosplaysScreenEvents()
 }

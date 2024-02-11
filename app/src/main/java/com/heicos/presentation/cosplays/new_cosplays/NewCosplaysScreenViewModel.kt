@@ -35,16 +35,7 @@ class NewCosplaysScreenViewModel @Inject constructor(
 
     init {
         loadNextCosplays()
-        viewModelScope.launch {
-            val queries = searchQueryDao.getSearchQueries()
-            queries.collect { searchQuery ->
-                if (state.history != searchQuery) {
-                    state = state.copy(
-                        history = searchQuery
-                    )
-                }
-            }
-        }
+
     }
 
     fun onEvent(event: NewCosplaysScreenEvents) {
@@ -91,6 +82,10 @@ class NewCosplaysScreenViewModel @Inject constructor(
                 viewModelScope.launch {
                     searchQueryDao.deleteById(event.searchItem)
                 }
+            }
+
+            NewCosplaysScreenEvents.LoadSearchQueries -> {
+                loadSearchQueries()
             }
         }
     }
@@ -169,5 +164,19 @@ class NewCosplaysScreenViewModel @Inject constructor(
         gridState = LazyGridState()
         cosplaysCache.clear()
         currentPage = 1
+    }
+
+    private fun loadSearchQueries() {
+        viewModelScope.launch {
+            val queries = searchQueryDao.getSearchQueries()
+            queries.collect { searchQuery ->
+                if (state.history != searchQuery) {
+                    state = state.copy(
+                        isHistoryLoading = false,
+                        history = searchQuery
+                    )
+                }
+            }
+        }
     }
 }

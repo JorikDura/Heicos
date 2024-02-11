@@ -5,6 +5,7 @@ import com.heicos.domain.model.SearchQuery
 
 data class NewCosplaysScreenState(
     val isLoading: Boolean = false,
+    val isHistoryLoading: Boolean = true,
     val isEmpty: Boolean = false,
     val isRefreshing: Boolean = false,
     val nextDataIsLoading: Boolean = false,

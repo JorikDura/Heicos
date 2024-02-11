@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -139,40 +140,56 @@ fun NewCosplaysScreen(
                 }
             }
         ) {
-            LazyColumn {
-                items(
-                    items = state.history.reversed(),
-                    key = { it.id }
-                ) { historyItem ->
-                    SwipeToDeleteContainer(
-                        item = historyItem,
-                        onDelete = {
-                            viewModel.onEvent(NewCosplaysScreenEvents.DeleteSearchItem(historyItem))
+            LaunchedEffect(Unit) {
+                viewModel.onEvent(NewCosplaysScreenEvents.LoadSearchQueries)
+            }
+            if (state.isHistoryLoading) {
+                LoadingScreen()
+            } else {
+                LazyColumn {
+                    items(
+                        items = state.history.reversed(),
+                        key = { it.id }
+                    ) { historyItem ->
+                        SwipeToDeleteContainer(
+                            item = historyItem,
+                            onDelete = {
+                                viewModel.onEvent(
+                                    NewCosplaysScreenEvents.DeleteSearchItem(
+                                        historyItem
+                                    )
+                                )
+                            }
+                        ) { item ->
+                            ListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { query = item.query },
+                                headlineContent = { Text(text = historyItem.query) },
+                                leadingContent = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
                         }
-                    ) { item ->
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { query = item.query },
-                            headlineContent = { Text(text = historyItem.query) },
-                            leadingContent = {
-                                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
-                            }
-                        )
                     }
-
-                }
-                if (state.history.isNotEmpty()) {
-                    item {
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { viewModel.onEvent(NewCosplaysScreenEvents.DeleteHistoryQuery) },
-                            headlineContent = { Text(text = stringResource(id = R.string.clean)) },
-                            leadingContent = {
-                                Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
-                            }
-                        )
+                    if (state.history.isNotEmpty()) {
+                        item {
+                            ListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.onEvent(NewCosplaysScreenEvents.DeleteHistoryQuery) },
+                                headlineContent = { Text(text = stringResource(id = R.string.clean)) },
+                                leadingContent = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Clear,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
