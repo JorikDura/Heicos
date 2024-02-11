@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.use_case.GetCosplayTagsUseCase
 import com.heicos.domain.use_case.GetFullCosplayUseCase
 import com.heicos.utils.Resource
 import com.heicos.utils.manager.CosplayDownloader
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FullCosplayScreenViewModel @Inject constructor(
     private val getFullCosplayUseCase: GetFullCosplayUseCase,
+    private val getCosplayTagsUseCase: GetCosplayTagsUseCase,
     private val cosplayDownloader: CosplayDownloader,
     private val savedState: SavedStateHandle
 ) : ViewModel() {
@@ -66,6 +68,10 @@ class FullCosplayScreenViewModel @Inject constructor(
                 downloadAllImages()
             }
 
+            FullCosplayScreenEvents.LoadCosplayTags -> {
+                getCosplayTags()
+            }
+
             is FullCosplayScreenEvents.DownloadImage -> {
                 downloadImage(event.url)
             }
@@ -91,6 +97,30 @@ class FullCosplayScreenViewModel @Inject constructor(
         }
     }
 
+    private fun getCosplayTags() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tags = getCosplayTagsUseCase(getCosplayPageUrl())
+            tags.collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        state = state.copy(message = result.message)
+                    }
+
+                    is Resource.Loading -> {
+
+                    }
+
+                    is Resource.Success -> {
+                        state = state.copy(
+                            tagsIsLoading = false,
+                            cosplayTags = result.data ?: emptyList(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun scrollToItem(index: Int) {
         viewModelScope.launch { gridState.scrollToItem(index) }
     }
@@ -100,8 +130,14 @@ class FullCosplayScreenViewModel @Inject constructor(
             ?: throw IllegalArgumentException("Argument can't be null")
     }
 
+    private fun getCosplayPageUrl(): String {
+        return savedState.get<CosplayPreview>("cosplayPreview")?.pageUrl
+            ?: throw IllegalArgumentException("Argument can't be null")
+    }
+
     private fun getCosplayTitle(): String {
         return savedState.get<CosplayPreview>("cosplayPreview")?.title
             ?: throw IllegalArgumentException("Argument can't be null")
     }
+
 }

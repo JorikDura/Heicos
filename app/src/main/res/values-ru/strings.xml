@@ -17,4 +17,11 @@
     <string name="navigation_item_recently">Недавние</string>
     <string name="navigation_item_new">Новые</string>
     <string name="navigation_item_ranking">Рейтинг</string>
+    <string name="more_info">Больше инфы</string>
+    <string name="title">Название: %1$s</string>
+    <string name="date">Дата: %1$s</string>
+    <string name="total">Всего: %1$s</string>
+    <string name="tags">Теги:</string>
+    <string name="empty">Пусто</string>
+
 </resources>

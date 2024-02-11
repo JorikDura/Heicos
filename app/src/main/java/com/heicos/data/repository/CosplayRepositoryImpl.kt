@@ -155,6 +155,31 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
         }
     }
 
+    override suspend fun getCosplayTags(url: String): Flow<Resource<List<String>>> {
+        return flow {
+            emit(Resource.Loading(isLoading = true))
+            try {
+                val result = mutableListOf<String>()
+                val doc = Jsoup.connect(url).get()
+
+                val main = doc.select("div#main_contents")
+                val tags = main.select("p#detail_tag").select("span").select("a")
+
+                tags.forEach { tag ->
+                    val text = tag.text()
+                    if (!result.contains(text))
+                        result.add(text)
+                }
+
+                emit(Resource.Success(data = result))
+            } catch (e: HttpStatusException) {
+                emit(Resource.Error(message = e.message ?: ERROR_MESSAGE, data = emptyList()))
+            } catch (e: Exception) {
+                emit(Resource.Error(message = e.message ?: ERROR_MESSAGE, data = emptyList()))
+            }
+        }
+    }
+
     private fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
