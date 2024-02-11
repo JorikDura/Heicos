@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -65,6 +67,8 @@ import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 
 @OptIn(ExperimentalFoundationApi::class)
 @Destination
@@ -88,6 +92,7 @@ fun FullCosplayScreen(
             val pagerState = rememberPagerState {
                 state.cosplaysPhotoUrl.size
             }
+
             val scope = rememberCoroutineScope()
             Column(
                 modifier = Modifier
@@ -188,9 +193,16 @@ fun FullCosplayScreen(
                 ) { isPager ->
                     if (isPager) {
                         HorizontalPager(
-                            state = pagerState
+                            modifier = Modifier
+                                .clipToBounds(),
+                            state = pagerState,
+                            beyondBoundsPageCount = 1
                         ) { index ->
-                            CosplayImageItem(data = state.cosplaysPhotoUrl[index])
+                            CosplayImageItem(
+                                data = state.cosplaysPhotoUrl[index],
+                                isZoomable = true,
+                                isActivePage = pagerState.settledPage == index
+                            )
                         }
                     } else {
                         LazyVerticalGrid(
@@ -258,7 +270,9 @@ fun FullCosplayScreen(
 @Composable
 fun CosplayImageItem(
     data: String,
-    scale: ContentScale = ContentScale.None
+    scale: ContentScale = ContentScale.None,
+    isZoomable: Boolean = false,
+    isActivePage: Boolean = false
 ) {
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
@@ -306,13 +320,45 @@ fun CosplayImageItem(
         }
 
         is AsyncImagePainter.State.Success -> {
-            Image(
-                modifier = Modifier
-                    .fillMaxSize(),
-                painter = imagePainter,
-                contentDescription = null,
-                contentScale = scale
-            )
+            if (isZoomable) {
+                val zoomState = rememberZoomState(
+                    maxScale = 2.25f,
+                    contentSize = imagePainter.intrinsicSize
+                )
+
+                Image(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zoomable(
+                            zoomState = zoomState,
+                            onDoubleTap = { position ->
+                                val targetScale = when {
+                                    zoomState.scale < 1.75f -> 1.75f
+                                    zoomState.scale < 2.25f -> 2.25f
+                                    zoomState.scale == 2.25f -> 1.0f
+                                    else -> 1.0f
+                                }
+                                zoomState.changeScale(targetScale, position)
+                            }
+                        ),
+                    painter = imagePainter,
+                    contentDescription = null,
+                    contentScale = scale
+                )
+
+                LaunchedEffect(!isActivePage) {
+                    zoomState.reset()
+                }
+
+            } else {
+                Image(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    painter = imagePainter,
+                    contentDescription = null,
+                    contentScale = scale
+                )
+            }
         }
     }
 }
