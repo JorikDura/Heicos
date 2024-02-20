@@ -234,7 +234,8 @@ fun FullCosplayScreen(
                                 CosplayImageItem(
                                     data = state.cosplaysPhotoUrl[index],
                                     isZoomable = true,
-                                    isActivePage = pagerState.settledPage == index
+                                    isActivePage = pagerState.settledPage == index,
+                                    scale = ContentScale.FillWidth
                                 )
                             }
                         } else {
