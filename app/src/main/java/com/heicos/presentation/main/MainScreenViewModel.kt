@@ -11,5 +11,5 @@ class MainScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     val state = networkObserver.observe()
-
+    val currentNetwork = networkObserver.getCurrentNetwork()
 }

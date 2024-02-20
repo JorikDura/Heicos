@@ -48,4 +48,7 @@ class NetworkConnectivityObserver @Inject constructor(
         }.distinctUntilChanged()
     }
 
+    override fun getCurrentNetwork(): Network? {
+        return connectivityManager.activeNetwork
+    }
 }

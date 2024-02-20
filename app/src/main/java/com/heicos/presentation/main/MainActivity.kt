@@ -55,12 +55,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val viewModel: MainScreenViewModel = hiltViewModel()
                     val connectionStatus =
-                        viewModel.state.collectAsState(initial = ConnectivityObserver.Status.Initial)
+                        viewModel.state.collectAsState(
+                            initial = if (viewModel.currentNetwork != null) ConnectivityObserver.Status.Available
+                            else ConnectivityObserver.Status.Unavailable
+                        )
                     when (connectionStatus.value) {
-                        ConnectivityObserver.Status.Initial -> {
-
-                        }
-
                         ConnectivityObserver.Status.Available -> {
                             val navController = rememberNavController()
 
