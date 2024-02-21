@@ -114,4 +114,6 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     //zoomable
     implementation("net.engawapg.lib:zoomable:1.6.0")
+    //bom
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
 }

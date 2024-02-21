@@ -20,12 +20,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
+import com.heicos.ui.theme.HeicosTheme
 
 @Composable
 fun CosplayScreenItem(
@@ -40,9 +44,13 @@ fun CosplayScreenItem(
             .fillMaxWidth(),
         shape = RoundedCornerShape(5.dp)
     ) {
-        Box(modifier = Modifier.height(275.dp)) {
+        Box(
+            modifier = Modifier
+                .height(275.dp)
+        ) {
             SubcomposeAsyncImage(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(cosplay.previewUrl)
                     .addHeader("User-Agent", USER_AGENT_MOZILLA)
@@ -88,8 +96,28 @@ fun CosplayScreenItem(
                     .align(Alignment.BottomStart),
                 text = cosplay.title,
                 textAlign = TextAlign.Center,
-                maxLines = 2
+                maxLines = 2,
+                color = Color.White
             )
         }
+    }
+}
+
+@Preview
+@PreviewLightDark
+@PreviewDynamicColors
+@Composable
+fun Preview() {
+    HeicosTheme {
+        CosplayScreenItem(
+            cosplay = CosplayPreview(
+                pageUrl = "",
+                storyPageUrl = "",
+                previewUrl = "",
+                title = "Shock loshock",
+                date = "2022.20002.02"
+            ),
+            onItemClickListener =  {}
+        )
     }
 }
