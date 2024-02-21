@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,10 +94,10 @@ fun FullCosplayScreen(
     viewModel: FullCosplayScreenViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
-    val state = viewModel.state
+    val state by viewModel.state.collectAsState()
 
     if (!state.message.isNullOrEmpty()) {
-        ErrorMessage(message = state.message)
+        ErrorMessage(message = state.message!!)
     } else {
         if (state.isLoading) {
             LoadingScreen()
@@ -316,38 +317,49 @@ fun FullCosplayScreen(
                             text = stringResource(id = R.string.total, state.cosplaysPhotoUrl.size)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
-                        if (state.tagsIsLoading) {
-                            Box(
-                                modifier = Modifier
-
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        } else {
-                            val tagsIsNotEmpty = state.cosplayTags.isNotEmpty()
-                            Text(
-                                fontSize = 18.sp,
-                                text = stringResource(
-                                    id = R.string.tags, if (tagsIsNotEmpty) ""
-                                    else stringResource(id = R.string.empty)
-                                )
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            AnimatedVisibility(visible = tagsIsNotEmpty) {
-                                FlowRow(
+                        when {
+                            state.tagsIsLoading -> {
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                ) {
-                                    state.cosplayTags.forEach { tag ->
-                                        TagContainer(
-                                            text = tag,
-                                            onClickListener = {
 
-                                            }
-                                        )
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            !state.messageInMoreInfo.isNullOrEmpty() -> {
+                                Text(
+                                    fontSize = 18.sp,
+                                    text = state.messageInMoreInfo!!
+                                )
+                            }
+
+                            else -> {
+                                val tagsIsNotEmpty = state.cosplayTags.isNotEmpty()
+                                Text(
+                                    fontSize = 18.sp,
+                                    text = stringResource(
+                                        id = R.string.tags, if (tagsIsNotEmpty) ""
+                                        else stringResource(id = R.string.empty)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                AnimatedVisibility(visible = tagsIsNotEmpty) {
+                                    FlowRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    ) {
+                                        state.cosplayTags.forEach { tag ->
+                                            TagContainer(
+                                                text = tag,
+                                                onClickListener = {
+
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }

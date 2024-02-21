@@ -177,6 +177,7 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
             } catch (e: Exception) {
                 emit(Resource.Error(message = e.message ?: ERROR_MESSAGE, data = emptyList()))
             }
+            emit(Resource.Loading(isLoading = false))
         }
     }
 

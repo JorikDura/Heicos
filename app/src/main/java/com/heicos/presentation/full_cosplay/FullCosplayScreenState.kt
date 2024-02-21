@@ -5,5 +5,6 @@ data class FullCosplayScreenState(
     val tagsIsLoading: Boolean = true,
     val cosplaysPhotoUrl: List<String> = emptyList(),
     val cosplayTags: List<String> = emptyList(),
-    val message: String? = null
+    val message: String? = null,
+    val messageInMoreInfo: String? = null
 )
