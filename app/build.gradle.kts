@@ -97,8 +97,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     //navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("io.github.raamcosta.compose-destinations:animations-core:1.9.55")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.55")
+    implementation("io.github.raamcosta.compose-destinations:animations-core:1.9.63")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.63")
     implementation("com.google.accompanist:accompanist-navigation-material:0.32.0")
     //ui
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")

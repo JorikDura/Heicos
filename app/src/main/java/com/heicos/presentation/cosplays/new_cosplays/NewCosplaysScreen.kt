@@ -61,6 +61,8 @@ import com.heicos.presentation.util.getActivity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @RootNavGraph(start = true)
@@ -68,14 +70,27 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun NewCosplaysScreen(
     viewModel: NewCosplaysScreenViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<FullCosplayScreenDestination, String>
 ) {
-    val gridCells = 2
-    val state by viewModel.state.collectAsState()
-
     var query by remember {
         mutableStateOf(viewModel.searchQuery)
     }
+
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> Unit
+
+            is NavResult.Value -> {
+                query = result.value
+                viewModel.onEvent(NewCosplaysScreenEvents.Search(query))
+            }
+        }
+    }
+
+    val gridCells = 2
+    val state by viewModel.state.collectAsState()
+
     var searchBarStatus by remember {
         mutableStateOf(false)
     }

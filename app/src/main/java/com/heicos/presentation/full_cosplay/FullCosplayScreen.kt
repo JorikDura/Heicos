@@ -79,6 +79,7 @@ import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -92,7 +93,8 @@ import net.engawapg.lib.zoomable.zoomable
 fun FullCosplayScreen(
     cosplayPreview: CosplayPreview,
     viewModel: FullCosplayScreenViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    resultNavigator: ResultBackNavigator<String>
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -356,7 +358,7 @@ fun FullCosplayScreen(
                                             TagContainer(
                                                 text = tag,
                                                 onClickListener = {
-
+                                                    resultNavigator.navigateBack(result = tag)
                                                 }
                                             )
                                         }
