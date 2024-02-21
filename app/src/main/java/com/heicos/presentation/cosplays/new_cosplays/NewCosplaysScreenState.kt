@@ -12,5 +12,6 @@ data class NewCosplaysScreenState(
     val nextDataIsEmpty: Boolean = false,
     val cosplays: List<CosplayPreview> = emptyList(),
     val history: List<SearchQuery> = emptyList(),
-    val message: String? = null
+    val message: String? = null,
+    val nextDataMessage: String? = null
 )

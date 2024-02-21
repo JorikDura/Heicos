@@ -242,19 +242,34 @@ fun NewCosplaysScreen(
                     item(
                         span = { GridItemSpan(gridCells) }
                     ) {
-                        if (state.nextDataIsLoading) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 36.dp, bottom = 36.dp)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                        when {
+                            !state.nextDataMessage.isNullOrEmpty() -> {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 36.dp, bottom = 36.dp)
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = state.nextDataMessage ?: "")
+                                }
                             }
-                        } else {
-                            if (!state.nextDataIsEmpty) {
-                                SideEffect {
-                                    viewModel.onEvent(NewCosplaysScreenEvents.LoadNextData)
+
+                            state.nextDataIsLoading -> {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 36.dp, bottom = 36.dp)
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            else -> {
+                                if (!state.nextDataIsEmpty) {
+                                    SideEffect {
+                                        viewModel.onEvent(NewCosplaysScreenEvents.LoadNextData)
+                                    }
                                 }
                             }
                         }

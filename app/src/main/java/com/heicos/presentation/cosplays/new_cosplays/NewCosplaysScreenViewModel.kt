@@ -30,7 +30,7 @@ class NewCosplaysScreenViewModel @Inject constructor(
     var searchQuery = ""
     var gridState = LazyGridState()
 
-    private val _state = MutableStateFlow(NewCosplaysScreenState())
+    private val _state = MutableStateFlow(NewCosplaysScreenState(isLoading = true))
     val state = _state.asStateFlow()
 
     init {
@@ -102,7 +102,11 @@ class NewCosplaysScreenViewModel @Inject constructor(
             remoteData.collect { result ->
                 when (result) {
                     is Resource.Error -> {
-                        _state.value = _state.value.copy(message = result.message)
+                        if (cosplaysCache.isNotEmpty()) {
+                            _state.value = _state.value.copy(nextDataMessage = result.message)
+                        } else {
+                            _state.value = _state.value.copy(message = result.message)
+                        }
                     }
 
                     is Resource.Loading -> {
@@ -155,7 +159,8 @@ class NewCosplaysScreenViewModel @Inject constructor(
             isLoading = true,
             isEmpty = false,
             nextDataIsEmpty = false,
-            message = null
+            message = null,
+            nextDataMessage = null
         )
 
         if (!isRefreshing) {
