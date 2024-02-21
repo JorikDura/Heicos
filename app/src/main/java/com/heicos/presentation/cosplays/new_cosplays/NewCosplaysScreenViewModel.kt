@@ -2,9 +2,6 @@ package com.heicos.presentation.cosplays.new_cosplays
 
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.data.database.SearchQueryDao
@@ -15,6 +12,8 @@ import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +30,8 @@ class NewCosplaysScreenViewModel @Inject constructor(
     var searchQuery = ""
     var gridState = LazyGridState()
 
-    var state by mutableStateOf(NewCosplaysScreenState(isLoading = true))
+    private val _state = MutableStateFlow(NewCosplaysScreenState())
+    val state = _state.asStateFlow()
 
     init {
         loadNextCosplays()
@@ -53,7 +53,7 @@ class NewCosplaysScreenViewModel @Inject constructor(
             }
 
             NewCosplaysScreenEvents.Refresh -> {
-                state = state.copy(isRefreshing = true)
+                _state.value = _state.value.copy(isRefreshing = true)
                 resetValues(true)
                 loadNextCosplays()
             }
@@ -100,12 +100,12 @@ class NewCosplaysScreenViewModel @Inject constructor(
             remoteData.collect { result ->
                 when (result) {
                     is Resource.Error -> {
-                        state = state.copy(message = result.message)
+                        _state.value = _state.value.copy(message = result.message)
                     }
 
                     is Resource.Loading -> {
                         if (loadingNextData && result.isLoading) {
-                            state = state.copy(
+                            _state.value = _state.value.copy(
                                 isLoading = false,
                                 nextDataIsLoading = true,
                                 cosplays = cosplaysCache,
@@ -116,9 +116,9 @@ class NewCosplaysScreenViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         result.data?.let { data ->
-                            state = if (data.isNotEmpty()) {
+                            _state.value = if (data.isNotEmpty()) {
                                 cosplaysCache.addAll(data)
-                                state.copy(
+                                _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
                                     nextDataIsLoading = false,
@@ -126,7 +126,7 @@ class NewCosplaysScreenViewModel @Inject constructor(
                                     message = null
                                 )
                             } else {
-                                state.copy(
+                                _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
                                     isEmpty = cosplaysCache.isEmpty(),
@@ -149,7 +149,7 @@ class NewCosplaysScreenViewModel @Inject constructor(
             viewModelScope.launch { gridState.stopScroll() }
         }
 
-        state = state.copy(
+        _state.value = _state.value.copy(
             isLoading = true,
             isEmpty = false,
             nextDataIsEmpty = false,
@@ -170,8 +170,8 @@ class NewCosplaysScreenViewModel @Inject constructor(
         viewModelScope.launch {
             val queries = searchQueryDao.getSearchQueries()
             queries.collect { searchQuery ->
-                if (state.history != searchQuery) {
-                    state = state.copy(
+                if (_state.value.history != searchQuery) {
+                    _state.value = _state.value.copy(
                         isHistoryLoading = false,
                         history = searchQuery
                     )

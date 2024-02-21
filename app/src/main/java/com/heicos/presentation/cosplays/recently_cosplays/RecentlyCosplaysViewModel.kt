@@ -2,17 +2,17 @@ package com.heicos.presentation.cosplays.recently_cosplays
 
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetCosplaysUseCase
 import com.heicos.domain.util.CosplayType
+import com.heicos.presentation.cosplays.new_cosplays.NewCosplaysScreenState
 import com.heicos.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +25,9 @@ class RecentlyCosplaysViewModel @Inject constructor(
 
     var gridState = LazyGridState()
 
-    var state by mutableStateOf(RecentlyCosplaysState(isLoading = true))
+
+    private val _state = MutableStateFlow(NewCosplaysScreenState())
+    val state = _state.asStateFlow()
 
     init {
         loadNextCosplays()
@@ -38,7 +40,7 @@ class RecentlyCosplaysViewModel @Inject constructor(
             }
 
             RecentlyCosplaysEvents.Refresh -> {
-                state = state.copy(isRefreshing = true)
+                _state.value = _state.value.copy(isRefreshing = true)
                 resetValues()
                 loadNextCosplays()
             }
@@ -48,7 +50,7 @@ class RecentlyCosplaysViewModel @Inject constructor(
     private fun loadNextCosplays(loadingNextData: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             if (loadingNextData) {
-                state = state.copy(
+                _state.value = _state.value.copy(
                     isLoading = false,
                     nextDataIsLoading = true,
                     cosplays = cosplaysCache,
@@ -64,12 +66,12 @@ class RecentlyCosplaysViewModel @Inject constructor(
             remoteData.collect { result ->
                 when (result) {
                     is Resource.Error -> {
-                        state = state.copy(message = result.message)
+                        _state.value = _state.value.copy(message = result.message)
                     }
 
                     is Resource.Loading -> {
                         if (loadingNextData && result.isLoading) {
-                            state = state.copy(
+                            _state.value = _state.value.copy(
                                 isLoading = false,
                                 nextDataIsLoading = true,
                                 cosplays = cosplaysCache,
@@ -80,9 +82,9 @@ class RecentlyCosplaysViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         result.data?.let { data ->
-                            state = if (data.isNotEmpty()) {
+                            _state.value = if (data.isNotEmpty()) {
                                 cosplaysCache.addAll(data)
-                                state.copy(
+                                _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
                                     nextDataIsLoading = false,
@@ -90,7 +92,7 @@ class RecentlyCosplaysViewModel @Inject constructor(
                                     message = null
                                 )
                             } else {
-                                state.copy(
+                                _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
                                     isEmpty = cosplaysCache.isEmpty(),
@@ -113,7 +115,7 @@ class RecentlyCosplaysViewModel @Inject constructor(
             viewModelScope.launch { gridState.stopScroll() }
         }
 
-        state = state.copy(
+        _state.value = _state.value.copy(
             isLoading = true,
             isEmpty = false,
             nextDataIsEmpty = false,

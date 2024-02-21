@@ -12,6 +12,7 @@ import com.heicos.utils.manager.CosplayDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class FullCosplayScreenViewModel @Inject constructor(
     private var cosplayPreview: CosplayPreview
 
     private val _state = MutableStateFlow(FullCosplayScreenState())
-    val state get() = _state
+    val state = _state.asStateFlow()
 
     val gridState = LazyGridState()
 

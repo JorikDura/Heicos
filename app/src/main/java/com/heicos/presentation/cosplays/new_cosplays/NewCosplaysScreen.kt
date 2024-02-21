@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,7 +71,7 @@ fun NewCosplaysScreen(
     navigator: DestinationsNavigator
 ) {
     val gridCells = 2
-    val state = viewModel.state
+    val state by viewModel.state.collectAsState()
 
     var query by remember {
         mutableStateOf(viewModel.searchQuery)
@@ -196,7 +197,7 @@ fun NewCosplaysScreen(
         }
 
         if (!state.message.isNullOrEmpty()) {
-            ErrorMessage(message = state.message)
+            ErrorMessage(message = state.message!!)
         } else {
             if (state.isLoading) {
                 LoadingScreen()

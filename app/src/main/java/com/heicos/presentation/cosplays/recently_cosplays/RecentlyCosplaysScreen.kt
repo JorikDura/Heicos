@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,7 +40,7 @@ fun RecentlyCosplaysScreen(
     navigator: DestinationsNavigator
 ) {
     val gridCells = 2
-    val state = viewModel.state
+    val state by viewModel.state.collectAsState()
     val pullRefreshState = rememberPullRefreshState(
         state.isRefreshing, { viewModel.onEvent(RecentlyCosplaysEvents.Refresh) })
 
@@ -48,7 +50,7 @@ fun RecentlyCosplaysScreen(
             .fillMaxSize(),
     ) {
         if (!state.message.isNullOrEmpty()) {
-            ErrorMessage(message = state.message)
+            ErrorMessage(message = state.message!!)
         } else {
             if (state.isLoading) {
                 LoadingScreen()
