@@ -116,12 +116,7 @@ fun NewCosplaysScreen(
             onSearch = {
                 viewModel.onEvent(NewCosplaysScreenEvents.Search(query))
                 searchBarStatus = false
-                val queryContains = state.history.find { searchQuery ->
-                    searchQuery.query == query
-                }
-                if (queryContains == null) {
-                    viewModel.onEvent(NewCosplaysScreenEvents.AddHistoryQuery(query))
-                }
+
             },
             active = searchBarStatus,
             onActiveChange = {

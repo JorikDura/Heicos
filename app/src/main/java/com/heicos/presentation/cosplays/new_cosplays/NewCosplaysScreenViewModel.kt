@@ -62,14 +62,16 @@ class NewCosplaysScreenViewModel @Inject constructor(
                 resetValues()
                 searchQuery = event.query
                 isSearching = true
-                loadNextCosplays()
-            }
-
-            is NewCosplaysScreenEvents.AddHistoryQuery -> {
-                val searchQuery = SearchQuery(query = event.query)
-                viewModelScope.launch {
-                    searchQueryDao.upsertSearchQuery(searchQuery)
+                val queryContains = _state.value.history.find { searchQuery ->
+                    searchQuery.query == event.query
                 }
+                if (queryContains == null) {
+                    val searchQuery = SearchQuery(query = event.query)
+                    viewModelScope.launch {
+                        searchQueryDao.upsertSearchQuery(searchQuery)
+                    }
+                }
+                loadNextCosplays()
             }
 
             is NewCosplaysScreenEvents.DeleteHistoryQuery -> {
