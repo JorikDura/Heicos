@@ -26,7 +26,7 @@ class RecentlyCosplaysViewModel @Inject constructor(
     var gridState = LazyGridState()
 
 
-    private val _state = MutableStateFlow(NewCosplaysScreenState())
+    private val _state = MutableStateFlow(NewCosplaysScreenState(isLoading = true))
     val state = _state.asStateFlow()
 
     init {
