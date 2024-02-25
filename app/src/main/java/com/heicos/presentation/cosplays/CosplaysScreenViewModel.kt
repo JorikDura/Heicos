@@ -1,11 +1,10 @@
-package com.heicos.presentation.cosplays.new_cosplays
+package com.heicos.presentation.cosplays
 
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.data.database.SearchQueryDao
-import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.model.SearchQuery
 import com.heicos.domain.use_case.GetCosplaysUseCase
 import com.heicos.domain.util.CosplayType
@@ -18,19 +17,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NewCosplaysScreenViewModel @Inject constructor(
+class CosplaysScreenViewModel @Inject constructor(
     private val getCosplaysUseCase: GetCosplaysUseCase,
     private val searchQueryDao: SearchQueryDao
 ) : ViewModel() {
 
     private var currentPage = 1
-    private val cosplaysCache = mutableListOf<CosplayPreview>()
     private var isSearching = false
 
     var searchQuery = ""
     var gridState = LazyGridState()
 
-    private val _state = MutableStateFlow(NewCosplaysScreenState(isLoading = true))
+    private val _state = MutableStateFlow(CosplaysScreenState(isLoading = true))
     val state = _state.asStateFlow()
 
     init {
@@ -38,13 +36,13 @@ class NewCosplaysScreenViewModel @Inject constructor(
 
     }
 
-    fun onEvent(event: NewCosplaysScreenEvents) {
+    fun onEvent(event: CosplaysScreenEvents) {
         when (event) {
-            NewCosplaysScreenEvents.LoadNextData -> {
+            CosplaysScreenEvents.LoadNextData -> {
                 loadNextCosplays(true)
             }
 
-            NewCosplaysScreenEvents.Reset -> {
+            CosplaysScreenEvents.Reset -> {
                 if (searchQuery.isEmpty())
                     return
 
@@ -52,13 +50,13 @@ class NewCosplaysScreenViewModel @Inject constructor(
                 loadNextCosplays()
             }
 
-            NewCosplaysScreenEvents.Refresh -> {
+            CosplaysScreenEvents.Refresh -> {
                 _state.value = _state.value.copy(isRefreshing = true)
                 resetValues(true)
                 loadNextCosplays()
             }
 
-            is NewCosplaysScreenEvents.Search -> {
+            is CosplaysScreenEvents.Search -> {
                 resetValues()
                 searchQuery = event.query
                 isSearching = true
@@ -74,19 +72,27 @@ class NewCosplaysScreenViewModel @Inject constructor(
                 loadNextCosplays()
             }
 
-            is NewCosplaysScreenEvents.DeleteHistoryQuery -> {
+            is CosplaysScreenEvents.DeleteHistoryQuery -> {
                 viewModelScope.launch {
                     searchQueryDao.deleteAllSearchQueries()
                 }
             }
 
-            is NewCosplaysScreenEvents.DeleteSearchItem -> {
+            is CosplaysScreenEvents.DeleteSearchItem -> {
                 viewModelScope.launch {
                     searchQueryDao.deleteById(event.searchItem)
                 }
             }
 
-            NewCosplaysScreenEvents.LoadSearchQueries -> {
+            is CosplaysScreenEvents.ChangeCosplayType -> {
+                resetValues()
+                _state.value = _state.value.copy(
+                    currentCosplayType = event.type
+                )
+                loadNextCosplays()
+            }
+
+            CosplaysScreenEvents.LoadSearchQueries -> {
                 loadSearchQueries()
             }
         }
@@ -96,13 +102,13 @@ class NewCosplaysScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val remoteData = getCosplaysUseCase(
                 page = currentPage,
-                cosplayType = if (isSearching) CosplayType.Search(searchQuery) else CosplayType.New
+                cosplayType = if (isSearching) CosplayType.Search(searchQuery) else _state.value.currentCosplayType
             )
 
             remoteData.collect { result ->
                 when (result) {
                     is Resource.Error -> {
-                        if (cosplaysCache.isNotEmpty()) {
+                        if (_state.value.cosplays.isNotEmpty()) {
                             _state.value = _state.value.copy(nextDataMessage = result.message)
                         } else {
                             _state.value = _state.value.copy(message = result.message)
@@ -114,7 +120,6 @@ class NewCosplaysScreenViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 nextDataIsLoading = true,
-                                cosplays = cosplaysCache,
                                 message = null
                             )
                         }
@@ -123,22 +128,20 @@ class NewCosplaysScreenViewModel @Inject constructor(
                     is Resource.Success -> {
                         result.data?.let { data ->
                             _state.value = if (data.isNotEmpty()) {
-                                cosplaysCache.addAll(data)
                                 _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
                                     nextDataIsLoading = false,
-                                    cosplays = cosplaysCache,
+                                    cosplays = _state.value.cosplays + data,
                                     message = null
                                 )
                             } else {
                                 _state.value.copy(
                                     isLoading = false,
                                     isRefreshing = false,
-                                    isEmpty = cosplaysCache.isEmpty(),
+                                    isEmpty = _state.value.cosplays.isEmpty(),
                                     nextDataIsLoading = false,
                                     nextDataIsEmpty = true,
-                                    cosplays = cosplaysCache,
                                     message = null
                                 )
                             }
@@ -160,7 +163,8 @@ class NewCosplaysScreenViewModel @Inject constructor(
             isEmpty = false,
             nextDataIsEmpty = false,
             message = null,
-            nextDataMessage = null
+            nextDataMessage = null,
+            cosplays = emptyList()
         )
 
         if (!isRefreshing) {
@@ -169,7 +173,6 @@ class NewCosplaysScreenViewModel @Inject constructor(
         }
 
         gridState = LazyGridState()
-        cosplaysCache.clear()
         currentPage = 1
     }
 

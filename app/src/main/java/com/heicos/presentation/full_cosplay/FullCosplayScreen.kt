@@ -2,16 +2,23 @@ package com.heicos.presentation.full_cosplay
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build.VERSION.SDK_INT
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,18 +65,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Dimension
 import com.heicos.R
@@ -80,9 +86,11 @@ import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import kotlin.math.abs
 
 @OptIn(
     ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
@@ -110,7 +118,6 @@ fun FullCosplayScreen(
             val pagerState = rememberPagerState {
                 state.cosplaysPhotoUrl.size
             }
-
             val scope = rememberCoroutineScope()
             var openBottomSheet by rememberSaveable { mutableStateOf(false) }
             val edgeToEdgeEnabled by remember { mutableStateOf(false) }
@@ -221,11 +228,12 @@ fun FullCosplayScreen(
                     modifier = Modifier
                         .weight(1f),
                 ) {
-                    AnimatedContent(
+                    Crossfade(
                         modifier = Modifier
                             .fillMaxSize(),
                         targetState = isPagerMode,
-                        label = "sliderMode"
+                        label = "sliderMode",
+                        animationSpec = tween(450)
                     ) { isPager ->
                         if (isPager) {
                             HorizontalPager(
@@ -234,11 +242,19 @@ fun FullCosplayScreen(
                                 state = pagerState,
                                 beyondBoundsPageCount = 1
                             ) { index ->
-                                CosplayImageItem(
+                                CosplayZoomableImageItem(
                                     data = state.cosplaysPhotoUrl[index],
-                                    isZoomable = true,
+                                    scope = scope,
                                     isActivePage = pagerState.settledPage == index,
-                                    scale = ContentScale.FillWidth
+                                    scale = ContentScale.FillWidth,
+                                    onDragEvent = {
+                                        viewModel.onEvent(
+                                            FullCosplayScreenEvents.ScrollToItem(
+                                                pagerState.currentPage
+                                            )
+                                        )
+                                        isPagerMode = !isPagerMode
+                                    }
                                 )
                             }
                         } else {
@@ -386,29 +402,17 @@ fun FullCosplayScreen(
 
 @Composable
 fun CosplayImageItem(
+    modifier: Modifier = Modifier,
     data: String,
     scale: ContentScale = ContentScale.None,
-    isZoomable: Boolean = false,
-    isActivePage: Boolean = false
 ) {
-    val imageLoader = ImageLoader.Builder(LocalContext.current)
-        .components {
-            if (SDK_INT >= 28) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
-        }
-        .build()
-
     val imagePainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(data)
             .addHeader("User-Agent", USER_AGENT_MOZILLA)
             .crossfade(true)
             .size(Dimension.Undefined, Dimension.Pixels(1920))
-            .build(),
-        imageLoader = imageLoader
+            .build()
     )
 
     when (imagePainter.state) {
@@ -437,45 +441,144 @@ fun CosplayImageItem(
         }
 
         is AsyncImagePainter.State.Success -> {
-            if (isZoomable) {
-                val zoomState = rememberZoomState(
-                    maxScale = 2.25f,
-                    contentSize = imagePainter.intrinsicSize
-                )
+            Image(
+                modifier = modifier
+                    .fillMaxSize(),
+                painter = imagePainter,
+                contentDescription = null,
+                contentScale = scale
+            )
+        }
+    }
+}
 
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zoomable(
-                            zoomState = zoomState,
-                            onDoubleTap = { position ->
-                                val targetScale = when {
-                                    zoomState.scale < 1.75f -> 1.75f
-                                    zoomState.scale < 2.25f -> 2.25f
-                                    zoomState.scale == 2.25f -> 1.0f
-                                    else -> 1.0f
-                                }
-                                zoomState.changeScale(targetScale, position)
-                            }
-                        ),
-                    painter = imagePainter,
-                    contentDescription = null,
-                    contentScale = scale
-                )
+@Composable
+fun CosplayZoomableImageItem(
+    modifier: Modifier = Modifier,
+    scope: CoroutineScope,
+    data: String,
+    scale: ContentScale = ContentScale.None,
+    isActivePage: Boolean = false,
+    onDragEvent: () -> Unit
+) {
+    val imagePainter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(data)
+            .addHeader("User-Agent", USER_AGENT_MOZILLA)
+            .crossfade(true)
+            .size(Dimension.Undefined, Dimension.Pixels(1920))
+            .build()
+    )
 
-                LaunchedEffect(!isActivePage) {
-                    zoomState.reset()
-                }
+    when (imagePainter.state) {
+        AsyncImagePainter.State.Empty -> {
 
-            } else {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = imagePainter,
-                    contentDescription = null,
-                    contentScale = scale
-                )
+        }
+
+        is AsyncImagePainter.State.Error -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = stringResource(id = R.string.error_message))
             }
+        }
+
+        is AsyncImagePainter.State.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is AsyncImagePainter.State.Success -> {
+            val zoomState = rememberZoomState(
+                maxScale = 2.25f,
+                contentSize = imagePainter.intrinsicSize
+            )
+
+            val translationY = remember {
+                Animatable(0f)
+            }
+            val draggableState = rememberDraggableState(onDelta = { dragAmount ->
+                scope.launch {
+                    translationY.snapTo(translationY.value + dragAmount)
+                }
+            })
+            val decay = rememberSplineBasedDecay<Float>()
+            val imageHeight = imagePainter.intrinsicSize.height
+            Image(
+                modifier = modifier
+                    .fillMaxSize()
+                    .zoomable(
+                        zoomState = zoomState,
+
+                        onDoubleTap = { position ->
+                            val targetScale = when {
+                                zoomState.scale < 1.75f -> 1.75f
+                                zoomState.scale < 2.25f -> 2.25f
+                                zoomState.scale == 2.25f -> 1.0f
+                                else -> 1.0f
+                            }
+                            zoomState.changeScale(targetScale, position)
+                        }
+                    )
+                    .graphicsLayer {
+                        this.translationY = translationY.value
+                        val newScale = lerp(
+                            start = 1f,
+                            stop = 1f,
+                            fraction = translationY.value / imageHeight
+                        )
+                        this.scaleX = newScale
+                        this.scaleY = newScale
+                    }
+                    .draggable(
+                        state = draggableState,
+                        orientation = Orientation.Vertical,
+                        enabled = zoomState.scale == 1.0f,
+                        onDragStopped = { velocity ->
+                            val decayY = decay.calculateTargetValue(
+                                translationY.value,
+                                velocity
+                            )
+                            scope.launch {
+                                val positiveDecayY = abs(decayY)
+                                val targetY =
+                                    if (positiveDecayY > imageHeight * 0.5) {
+                                        onDragEvent()
+                                        if (decayY > 0f)
+                                            imageHeight
+                                        else -imageHeight
+                                    } else 0f
+                                val canReachTargetDecay =
+                                    (positiveDecayY > targetY && targetY == imageHeight)
+                                            || (positiveDecayY < targetY && targetY == 0f)
+
+                                if (canReachTargetDecay) {
+                                    translationY.animateDecay(
+                                        initialVelocity = velocity,
+                                        animationSpec = decay
+                                    )
+                                } else {
+                                    translationY.animateTo(targetY, initialVelocity = velocity)
+                                }
+                                translationY.snapTo(0f)
+                            }
+                        }),
+                painter = imagePainter,
+                contentDescription = null,
+                contentScale = scale
+            )
+
+            LaunchedEffect(!isActivePage) {
+                zoomState.reset()
+            }
+
         }
     }
 }

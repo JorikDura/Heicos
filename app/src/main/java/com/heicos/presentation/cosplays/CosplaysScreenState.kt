@@ -1,9 +1,11 @@
-package com.heicos.presentation.cosplays.new_cosplays
+package com.heicos.presentation.cosplays
 
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.model.SearchQuery
+import com.heicos.domain.util.CosplayType
 
-data class NewCosplaysScreenState(
+data class CosplaysScreenState(
+    val currentCosplayType: CosplayType = CosplayType.New,
     val isLoading: Boolean = false,
     val isHistoryLoading: Boolean = true,
     val isEmpty: Boolean = false,

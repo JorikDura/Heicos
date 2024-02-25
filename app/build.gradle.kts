@@ -93,8 +93,8 @@ dependencies {
     //hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.46.1")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     //navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("io.github.raamcosta.compose-destinations:animations-core:1.9.63")
@@ -107,7 +107,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.16.1")
     //material
     implementation("androidx.compose.material3:material3:1.2.0")
-    implementation("androidx.compose.material:material:1.6.1")
+    implementation("androidx.compose.material:material:1.6.2")
     //room
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
@@ -116,4 +116,6 @@ dependencies {
     implementation("net.engawapg.lib:zoomable:1.6.0")
     //bom
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    //foundation
+    implementation("androidx.compose.foundation:foundation:1.6.2")
 }
