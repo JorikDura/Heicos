@@ -1,5 +1,6 @@
 package com.heicos.presentation.cosplays.recently_cosplays
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,19 +9,21 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,7 +35,7 @@ import com.heicos.presentation.util.LoadingScreen
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun RecentlyCosplaysScreen(
@@ -41,12 +44,17 @@ fun RecentlyCosplaysScreen(
 ) {
     val gridCells = 2
     val state by viewModel.state.collectAsState()
-    val pullRefreshState = rememberPullRefreshState(
-        state.isRefreshing, { viewModel.onEvent(RecentlyCosplaysEvents.Refresh) })
+    val pullRefreshState = rememberPullToRefreshState()
 
+    if(pullRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.onEvent(RecentlyCosplaysEvents.Refresh)
+            pullRefreshState.endRefresh()
+        }
+    }
     Box(
         modifier = Modifier
-            .pullRefresh(pullRefreshState)
+            .nestedScroll(pullRefreshState.nestedScrollConnection)
             .fillMaxSize(),
     ) {
         if (!state.message.isNullOrEmpty()) {
@@ -104,13 +112,15 @@ fun RecentlyCosplaysScreen(
             }
         }
 
-        PullRefreshIndicator(
+        val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
+            LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
+        PullToRefreshContainer(
             modifier = Modifier
-                .align(Alignment.TopCenter),
-            refreshing = state.isRefreshing,
+                .align(Alignment.TopCenter)
+                .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
             state = pullRefreshState,
-            contentColor = MaterialTheme.colorScheme.primary,
-            backgroundColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.primary
         )
     }
 }
