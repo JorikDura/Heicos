@@ -6,8 +6,11 @@ import com.heicos.domain.util.CosplayType
 
 data class CosplaysScreenState(
     val currentCosplayType: CosplayType = CosplayType.New,
+    val currentPage: Int = CosplaysScreenViewModel.DEFAULT_PAGE,
+    val nextPage: Int = CosplaysScreenViewModel.DEFAULT_PAGE,
     val isLoading: Boolean = false,
     val isHistoryLoading: Boolean = true,
+    val isHistoryIsEmpty: Boolean = false,
     val isEmpty: Boolean = false,
     val isRefreshing: Boolean = false,
     val nextDataIsLoading: Boolean = false,

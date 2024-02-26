@@ -23,5 +23,9 @@
     <string name="total">Total: %1$s</string>
     <string name="tags">Tags: %1$s</string>
     <string name="empty">Empty</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="pages">Pages:</string>
+    <string name="empty_queries">It is still empty here. Friend, try to look for something.</string>
 
 </resources>

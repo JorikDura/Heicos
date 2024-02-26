@@ -22,24 +22,22 @@ class CosplaysScreenViewModel @Inject constructor(
     private val searchQueryDao: SearchQueryDao
 ) : ViewModel() {
 
-    private var currentPage = 1
     private var isSearching = false
-
-    var searchQuery = ""
-    var gridState = LazyGridState()
 
     private val _state = MutableStateFlow(CosplaysScreenState(isLoading = true))
     val state = _state.asStateFlow()
 
+    var searchQuery = ""
+    var gridState = LazyGridState()
+
     init {
         loadNextCosplays()
-
     }
 
     fun onEvent(event: CosplaysScreenEvents) {
         when (event) {
             CosplaysScreenEvents.LoadNextData -> {
-                loadNextCosplays(true)
+                loadNextCosplays(loadingNextData = true)
             }
 
             CosplaysScreenEvents.Reset -> {
@@ -52,7 +50,7 @@ class CosplaysScreenViewModel @Inject constructor(
 
             CosplaysScreenEvents.Refresh -> {
                 _state.value = _state.value.copy(isRefreshing = true)
-                resetValues(true)
+                resetValues(isRefreshing = true)
                 loadNextCosplays()
             }
 
@@ -87,7 +85,18 @@ class CosplaysScreenViewModel @Inject constructor(
             is CosplaysScreenEvents.ChangeCosplayType -> {
                 resetValues()
                 _state.value = _state.value.copy(
+                    currentPage = DEFAULT_PAGE,
+                    nextPage = DEFAULT_PAGE + 1,
                     currentCosplayType = event.type
+                )
+                loadNextCosplays()
+            }
+
+            is CosplaysScreenEvents.ChangePage -> {
+                resetValues()
+                _state.value = _state.value.copy(
+                    isLoading = true,
+                    currentPage = event.page
                 )
                 loadNextCosplays()
             }
@@ -101,7 +110,7 @@ class CosplaysScreenViewModel @Inject constructor(
     private fun loadNextCosplays(loadingNextData: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             val remoteData = getCosplaysUseCase(
-                page = currentPage,
+                page = if (loadingNextData) _state.value.nextPage else _state.value.currentPage,
                 cosplayType = if (isSearching) CosplayType.Search(searchQuery) else _state.value.currentCosplayType
             )
 
@@ -129,6 +138,8 @@ class CosplaysScreenViewModel @Inject constructor(
                         result.data?.let { data ->
                             _state.value = if (data.isNotEmpty()) {
                                 _state.value.copy(
+                                    currentPage = _state.value.currentPage,
+                                    nextPage = _state.value.currentPage + 1,
                                     isLoading = false,
                                     isRefreshing = false,
                                     nextDataIsLoading = false,
@@ -146,7 +157,6 @@ class CosplaysScreenViewModel @Inject constructor(
                                 )
                             }
                         }
-                        currentPage++
                     }
                 }
             }
@@ -173,20 +183,29 @@ class CosplaysScreenViewModel @Inject constructor(
         }
 
         gridState = LazyGridState()
-        currentPage = 1
     }
 
     private fun loadSearchQueries() {
         viewModelScope.launch {
             val queries = searchQueryDao.getSearchQueries()
             queries.collect { searchQuery ->
-                if (_state.value.history != searchQuery) {
+                if (searchQuery.isEmpty()) {
                     _state.value = _state.value.copy(
                         isHistoryLoading = false,
+                        isHistoryIsEmpty = searchQuery.isEmpty()
+                    )
+                } else {
+                    _state.value = _state.value.copy(
+                        isHistoryLoading = false,
+                        isHistoryIsEmpty = false,
                         history = searchQuery
                     )
                 }
             }
         }
+    }
+
+    companion object {
+        const val DEFAULT_PAGE = 1
     }
 }

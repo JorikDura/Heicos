@@ -23,5 +23,9 @@
     <string name="total">Всего: %1$s</string>
     <string name="tags">Теги:</string>
     <string name="empty">Пусто</string>
+    <string name="reset">Сброс</string>
+    <string name="apply">Применить</string>
+    <string name="pages">Страницы:</string>
+    <string name="empty_queries">Здесь пока что пусто. Друг, попробуй поискать что-нибудь.</string>
 
 </resources>
