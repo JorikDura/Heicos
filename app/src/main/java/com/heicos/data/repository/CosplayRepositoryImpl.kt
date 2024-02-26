@@ -201,7 +201,7 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =
-                "https://hentai-cosplays.com/" + imageList.select("div.image-list-item-image")
+                "https://hentai-cosplays.com" + imageList.select("div.image-list-item-image")
                     .select("a")
                     .eq(i)
                     .attr("href")

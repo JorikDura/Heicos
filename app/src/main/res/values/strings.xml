@@ -30,5 +30,6 @@
     <string name="about">About</string>
     <string name="try_again">Try again</string>
     <string name="last_page">Last page: %1$s</string>
+    <string name="share">Share</string>
 
 </resources>

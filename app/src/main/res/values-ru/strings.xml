@@ -30,5 +30,6 @@
     <string name="about">О приложении</string>
     <string name="try_again">Попробовать еще раз</string>
     <string name="last_page">Последняя страница: %1$s</string>
+    <string name="share">Поделиться</string>
 
 </resources>

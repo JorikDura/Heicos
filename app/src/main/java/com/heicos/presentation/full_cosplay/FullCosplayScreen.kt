@@ -82,6 +82,7 @@ import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
+import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -95,10 +96,18 @@ import kotlin.math.abs
     ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
     ExperimentalLayoutApi::class
 )
-@Destination
+@Destination(
+    deepLinks = [
+        DeepLink(
+            uriPattern = "https://hentai-cosplays.com/image/{cosplayName}/",
+            action = Intent.ACTION_VIEW
+        )
+    ]
+)
 @Composable
 fun FullCosplayScreen(
-    cosplayPreview: CosplayPreview,
+    cosplayName: String = "",
+    cosplayPreview: CosplayPreview = CosplayPreview(),
     viewModel: FullCosplayScreenViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
     resultNavigator: ResultBackNavigator<String>
@@ -140,7 +149,7 @@ fun FullCosplayScreen(
                             .padding(start = 12.dp),
                     ) {
                         Text(
-                            text = cosplayPreview.title,
+                            text = cosplayPreview.title.ifEmpty { state.title },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -164,6 +173,17 @@ fun FullCosplayScreen(
                                 onClick = {
                                     Intent(Intent.ACTION_VIEW).also {
                                         it.data = Uri.parse(cosplayPreview.pageUrl)
+                                        context.startActivity(it)
+                                    }
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(text = stringResource(id = R.string.share)) },
+                                onClick = {
+                                    Intent(Intent.ACTION_SEND).also {
+                                        it.putExtra(Intent.EXTRA_TEXT, cosplayPreview.pageUrl)
+                                        it.type = "text/plain"
                                         context.startActivity(it)
                                     }
                                     expanded = false

@@ -33,6 +33,18 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     init {
         cosplayPreview = getCosplayPreview()
+        if (cosplayPreview.storyPageUrl.isEmpty()) {
+            val cosplayName = getCosplayName()
+            cosplayPreview =
+                CosplayPreview(
+                    title = cosplayName,
+                    pageUrl = "https://hentai-cosplays.com//image/${cosplayName}",
+                    storyPageUrl = "/story/${cosplayName}/"
+                )
+            _state.value = _state.value.copy(
+                title = cosplayName
+            )
+        }
         loadCosplays()
     }
 
@@ -135,6 +147,11 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun getCosplayPreview(): CosplayPreview {
         return savedState.get<CosplayPreview>("cosplayPreview")
+            ?: throw IllegalArgumentException("Argument can't be null")
+    }
+
+    private fun getCosplayName(): String {
+        return savedState.get<String>("cosplayName")
             ?: throw IllegalArgumentException("Argument can't be null")
     }
 
