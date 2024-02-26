@@ -178,6 +178,7 @@ fun FullCosplayScreen(
                                     expanded = false
                                 }
                             )
+                            HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.share)) },
                                 onClick = {
