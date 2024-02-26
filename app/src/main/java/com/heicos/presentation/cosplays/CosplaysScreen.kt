@@ -2,6 +2,7 @@ package com.heicos.presentation.cosplays
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -25,6 +26,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
@@ -71,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -229,6 +233,22 @@ fun CosplaysScreen(
                     }
                 }
                 Spacer(Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .clickable {
+                                page = state.lastPage ?: 0
+                            },
+                        text = stringResource(id = R.string.last_page, state.lastPage.toString())
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
@@ -258,6 +278,17 @@ fun CosplaysScreen(
                         Text(text = stringResource(id = R.string.apply))
                     }
                 }
+                Spacer(Modifier.height(12.dp))
+                var checkedState by remember { mutableStateOf(state.reversedMode) }
+                CheckBox(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp),
+                    checkedState = checkedState,
+                    onClickListener = {
+                        checkedState = !checkedState
+                        viewModel.onEvent(CosplaysScreenEvents.ChangeReversedState(checkedState))
+                    }
+                )
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -514,5 +545,37 @@ fun CosplaysScreen(
             return@BackHandler
         }
         context.getActivity()?.finish()
+    }
+}
+
+@Composable
+fun CheckBox(
+    modifier: Modifier = Modifier,
+    checkedState: Boolean,
+    onClickListener: () -> Unit
+) {
+    Crossfade(targetState = checkedState, label = "checkbox_animation") { checked ->
+        Row(
+            modifier = modifier
+                .toggleable(
+                    value = checkedState,
+                    onValueChange = {
+                        onClickListener()
+                    },
+                    role = Role.Checkbox
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = null
+            )
+            Text(
+                text = "Reversed",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
     }
 }

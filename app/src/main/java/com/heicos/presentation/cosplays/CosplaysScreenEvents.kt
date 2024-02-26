@@ -8,6 +8,7 @@ sealed class CosplaysScreenEvents {
     data class ChangeCosplayType(val type: CosplayType) : CosplaysScreenEvents()
     data class DeleteSearchItem(val searchItem: SearchQuery) : CosplaysScreenEvents()
     data class ChangePage(val page: Int) : CosplaysScreenEvents()
+    data class ChangeReversedState(val state: Boolean) : CosplaysScreenEvents()
     data object Reset : CosplaysScreenEvents()
     data object Refresh : CosplaysScreenEvents()
     data object LoadNextData : CosplaysScreenEvents()

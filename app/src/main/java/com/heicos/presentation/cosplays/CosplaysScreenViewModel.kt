@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.data.database.SearchQueryDao
 import com.heicos.domain.model.SearchQuery
+import com.heicos.domain.use_case.GetCosplaysLastPageUseCase
 import com.heicos.domain.use_case.GetCosplaysUseCase
 import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CosplaysScreenViewModel @Inject constructor(
     private val getCosplaysUseCase: GetCosplaysUseCase,
+    private val getCosplaysLastPageUseCase: GetCosplaysLastPageUseCase,
     private val searchQueryDao: SearchQueryDao
 ) : ViewModel() {
 
@@ -87,7 +89,8 @@ class CosplaysScreenViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentPage = DEFAULT_PAGE,
                     nextPage = DEFAULT_PAGE + 1,
-                    currentCosplayType = event.type
+                    currentCosplayType = event.type,
+                    reversedMode = false
                 )
                 loadNextCosplays()
             }
@@ -96,9 +99,16 @@ class CosplaysScreenViewModel @Inject constructor(
                 resetValues()
                 _state.value = _state.value.copy(
                     isLoading = true,
-                    currentPage = event.page
+                    currentPage = event.page,
+                    nextPage = event.page
                 )
                 loadNextCosplays()
+            }
+
+            is CosplaysScreenEvents.ChangeReversedState -> {
+                _state.value = _state.value.copy(
+                    reversedMode = event.state
+                )
             }
 
             CosplaysScreenEvents.LoadSearchQueries -> {
@@ -138,8 +148,9 @@ class CosplaysScreenViewModel @Inject constructor(
                         result.data?.let { data ->
                             _state.value = if (data.isNotEmpty()) {
                                 _state.value.copy(
-                                    currentPage = _state.value.currentPage,
-                                    nextPage = _state.value.currentPage + 1,
+                                    //currentPage = _state.value.currentPage,
+                                    nextPage = if (_state.value.reversedMode)
+                                        _state.value.nextPage - 1 else _state.value.nextPage + 1,
                                     isLoading = false,
                                     isRefreshing = false,
                                     nextDataIsLoading = false,
@@ -156,6 +167,9 @@ class CosplaysScreenViewModel @Inject constructor(
                                     message = null
                                 )
                             }
+                        }
+                        if (_state.value.lastPage == null || _state.value.lastPage == 0) {
+                            loadLastPage()
                         }
                     }
                 }
@@ -202,6 +216,15 @@ class CosplaysScreenViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun loadLastPage() {
+        viewModelScope.launch {
+            val page = getCosplaysLastPageUseCase()
+            _state.value = _state.value.copy(
+                lastPage = page
+            )
         }
     }
 

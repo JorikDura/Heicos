@@ -8,6 +8,7 @@ data class CosplaysScreenState(
     val currentCosplayType: CosplayType = CosplayType.New,
     val currentPage: Int = CosplaysScreenViewModel.DEFAULT_PAGE,
     val nextPage: Int = CosplaysScreenViewModel.DEFAULT_PAGE,
+    val lastPage: Int? = null,
     val isLoading: Boolean = false,
     val isHistoryLoading: Boolean = true,
     val isHistoryIsEmpty: Boolean = false,
@@ -18,5 +19,6 @@ data class CosplaysScreenState(
     val cosplays: List<CosplayPreview> = emptyList(),
     val history: List<SearchQuery> = emptyList(),
     val message: String? = null,
-    val nextDataMessage: String? = null
+    val nextDataMessage: String? = null,
+    val reversedMode: Boolean = false
 )

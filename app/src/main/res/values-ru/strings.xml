@@ -27,7 +27,8 @@
     <string name="apply">Применить</string>
     <string name="pages">Страницы:</string>
     <string name="empty_queries">Здесь пока что пусто. Друг, попробуй поискать что-нибудь.</string>
-    <string name="about">About</string>
+    <string name="about">О приложении</string>
     <string name="try_again">Попробовать еще раз</string>
+    <string name="last_page">Последняя страница: %1$s</string>
 
 </resources>

@@ -11,6 +11,7 @@ import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
+    private var lastPage: Int? = null
     override suspend fun getCosplays(
         page: Int,
         cosplayType: CosplayType
@@ -181,9 +182,22 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
         }
     }
 
+    override suspend fun getCosplayLastPage(): Int {
+        return lastPage ?: 0
+    }
+
     private fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
+
+        if (lastPage == null) {
+            val lastUrlPage =
+                doc.select("div#outline").select("div#center_left").select("div#center")
+                    .select("div.wp-pagenavi").select("a.last").attr("href")
+            val lastPageResult = lastUrlPage.substringAfter("page/")
+            lastPage = lastPageResult.replace("/", "").toInt()
+        }
+
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =

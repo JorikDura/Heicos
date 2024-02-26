@@ -13,5 +13,6 @@ interface CosplayRepository {
 
     suspend fun getFullCosplay(url: String): Flow<Resource<List<String>>>
     suspend fun getCosplayTags(url: String): Flow<Resource<List<String>>>
+    suspend fun getCosplayLastPage(): Int
 
 }

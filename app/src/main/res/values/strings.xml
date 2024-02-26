@@ -27,7 +27,8 @@
     <string name="apply">Apply</string>
     <string name="pages">Pages:</string>
     <string name="empty_queries">It is still empty here. Friend, try to look for something.</string>
-    <string name="about">О приложении</string>
+    <string name="about">About</string>
     <string name="try_again">Try again</string>
+    <string name="last_page">Last page: %1$s</string>
 
 </resources>
