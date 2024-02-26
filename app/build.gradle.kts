@@ -31,7 +31,7 @@ android {
         minSdk = 27
         targetSdk = 34
         versionCode = 1
-        versionName = "1.6"
+        versionName = "1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -117,5 +117,5 @@ dependencies {
     //bom
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     //foundation
-    implementation("androidx.compose.foundation:foundation:1.6.2")
+    //implementation("androidx.compose.foundation:foundation:1.6.2")
 }

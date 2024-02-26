@@ -8,7 +8,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
@@ -233,7 +232,7 @@ fun FullCosplayScreen(
                             .fillMaxSize(),
                         targetState = isPagerMode,
                         label = "sliderMode",
-                        animationSpec = tween(450)
+                        //animationSpec = tween(400)
                     ) { isPager ->
                         if (isPager) {
                             HorizontalPager(
