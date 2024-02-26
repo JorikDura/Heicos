@@ -51,7 +51,10 @@ class CosplaysScreenViewModel @Inject constructor(
             }
 
             CosplaysScreenEvents.Refresh -> {
-                _state.value = _state.value.copy(isRefreshing = true)
+                _state.value = _state.value.copy(
+                    isRefreshing = true,
+                    nextPage = _state.value.currentPage
+                )
                 resetValues(isRefreshing = true)
                 loadNextCosplays()
             }
