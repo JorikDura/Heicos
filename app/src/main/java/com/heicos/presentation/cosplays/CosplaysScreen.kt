@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -32,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissibleDrawerSheet
@@ -44,10 +47,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
@@ -78,6 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.heicos.R
 import com.heicos.presentation.cosplays.types.CosplayTypes
+import com.heicos.presentation.destinations.AboutScreenDestination
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
@@ -150,15 +154,26 @@ fun CosplaysScreen(
         drawerContent = {
             DismissibleDrawerSheet(
                 modifier = Modifier
+                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(Modifier.height(12.dp))
                 CosplayTypes.entries.forEach { cosplay ->
+                    val selected = cosplay.cosplayType == state.currentCosplayType
                     NavigationDrawerItem(
                         modifier = Modifier.padding(horizontal = 12.dp),
-                        icon = { Icon(imageVector = cosplay.icon, contentDescription = null) },
+                        icon = {
+                            Icon(
+                                imageVector = if (selected) {
+                                    cosplay.selectedIcon
+                                } else {
+                                    cosplay.icon
+                                },
+                                contentDescription = null
+                            )
+                        },
                         label = { Text(text = stringResource(id = cosplay.title)) },
-                        selected = cosplay.cosplayType == state.currentCosplayType,
+                        selected = selected,
                         onClick = {
                             if (state.currentCosplayType != cosplay.cosplayType) {
                                 page = 1
@@ -176,7 +191,7 @@ fun CosplaysScreen(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
@@ -193,11 +208,6 @@ fun CosplaysScreen(
                         modifier = Modifier
                             .weight(1f),
                         value = page.toString(),
-                        label = {
-                            Text(
-                                text = stringResource(id = R.string.pages)
-                            )
-                        },
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
@@ -226,7 +236,7 @@ fun CosplaysScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
+                    TextButton(
                         onClick = {
                             focusManager.clearFocus()
                             page = 1
@@ -236,7 +246,7 @@ fun CosplaysScreen(
                     ) {
                         Text(text = stringResource(id = R.string.reset))
                     }
-                    OutlinedButton(
+                    TextButton(
                         onClick = {
                             if (state.currentPage != page) {
                                 focusManager.clearFocus()
@@ -248,6 +258,27 @@ fun CosplaysScreen(
                         Text(text = stringResource(id = R.string.apply))
                     }
                 }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    TextButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter),
+                        onClick = {
+                            navigator.navigate(AboutScreenDestination)
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = stringResource(id = R.string.about))
+                        }
+                    }
+                }
+
             }
         }
     ) {
@@ -376,7 +407,12 @@ fun CosplaysScreen(
             }
 
             if (!state.message.isNullOrEmpty()) {
-                ErrorMessage(message = state.message!!)
+                ErrorMessage(
+                    message = state.message!!,
+                    onButtonClickListener = {
+                        viewModel.onEvent(CosplaysScreenEvents.Refresh)
+                    }
+                )
             } else {
                 if (state.isLoading) {
                     LoadingScreen()
