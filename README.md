@@ -30,3 +30,6 @@ That's all.
 Картинки могут быть плохого качества, а некоторые в принципе не загрузятся ввиду защиты на нескольких доменах с cloudflare.
 <br>
 В общем-то все.
+<br>
+<p>Fake data video/Видео с фейковыми данными:</p>
+<video src = "https://github.com/JorikDura/Heicos/assets/94559706/0dc96149-6fbc-4332-93c9-c5c9b1e4cb80"></video>
