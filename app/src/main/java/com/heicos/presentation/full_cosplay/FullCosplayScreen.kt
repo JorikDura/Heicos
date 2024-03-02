@@ -310,6 +310,7 @@ fun FullCosplayScreen(
                     }
                     AnimatedContent(
                         modifier = Modifier
+                            .padding(top = 16.dp)
                             .align(Alignment.TopCenter),
                         targetState = isPagerMode,
                         label = "cosplaysListSize",
