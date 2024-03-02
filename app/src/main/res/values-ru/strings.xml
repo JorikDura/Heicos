@@ -31,5 +31,6 @@
     <string name="try_again">Попробовать еще раз</string>
     <string name="last_page">Последняя страница: %1$s</string>
     <string name="share">Поделиться</string>
+    <string name="of_pages">из</string>
 
 </resources>

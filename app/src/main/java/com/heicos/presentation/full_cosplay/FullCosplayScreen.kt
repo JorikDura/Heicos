@@ -14,6 +14,7 @@ import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -48,6 +49,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -64,6 +66,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -305,18 +308,26 @@ fun FullCosplayScreen(
                             }
                         }
                     }
-                    Box(
+                    AnimatedContent(
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 12.dp)
-                    ) {
-                        AnimatedContent(
-                            targetState = isPagerMode,
-                            label = "cosplaysListSize",
-                            transitionSpec = { fadeIn() togetherWith fadeOut() }
-                        ) { isPager ->
-                            if (isPager) {
-                                Text(text = "${pagerState.currentPage + 1}/${state.cosplaysPhotoUrl.size}")
+                            .align(Alignment.TopCenter),
+                        targetState = isPagerMode,
+                        label = "cosplaysListSize",
+                        transitionSpec = { fadeIn() togetherWith fadeOut() }
+                    ) { isPager ->
+                        if (isPager) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(15.dp))
+                                    .background(MaterialTheme.colorScheme.secondary),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                                    text = "${pagerState.currentPage + 1} ${stringResource(id = R.string.of_pages)} ${state.cosplaysPhotoUrl.size}",
+                                    color = Color.White
+                                )
                             }
                         }
                     }
