@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,7 +42,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -131,10 +131,8 @@ fun FullCosplayScreen(
             }
             val scope = rememberCoroutineScope()
             var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-            val edgeToEdgeEnabled by remember { mutableStateOf(false) }
-            val skipPartiallyExpanded by remember { mutableStateOf(false) }
             val bottomSheetState = rememberModalBottomSheetState(
-                skipPartiallyExpanded = skipPartiallyExpanded
+                skipPartiallyExpanded = true
             )
             Column(
                 modifier = Modifier
@@ -336,13 +334,10 @@ fun FullCosplayScreen(
             }
 
             if (openBottomSheet) {
-                val windowInsets = if (edgeToEdgeEnabled)
-                    WindowInsets(0) else BottomSheetDefaults.windowInsets
-
                 ModalBottomSheet(
                     onDismissRequest = { openBottomSheet = false },
                     sheetState = bottomSheetState,
-                    windowInsets = windowInsets
+                    windowInsets = WindowInsets.displayCutout,
                 ) {
                     LaunchedEffect(Unit) {
                         viewModel.onEvent(FullCosplayScreenEvents.LoadCosplayTags)
@@ -351,6 +346,7 @@ fun FullCosplayScreen(
                         modifier = Modifier
                             .padding(start = 12.dp, top = 24.dp, end = 12.dp, bottom = 24.dp)
                             .fillMaxWidth()
+
                     ) {
                         Text(
                             fontSize = 18.sp,

@@ -1,16 +1,23 @@
 package com.heicos.data.repository
 
+import com.heicos.data.database.SearchQueryDao
+import com.heicos.data.mapper.toSearchQuery
+import com.heicos.data.mapper.toSearchQueryEntity
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.model.SearchQuery
 import com.heicos.domain.repository.CosplayRepository
 import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transform
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
-class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
+class CosplayRepositoryImpl @Inject constructor(
+    private val searchQueryDao: SearchQueryDao
+) : CosplayRepository {
     private var lastPage: Int? = null
     override suspend fun getCosplays(
         page: Int,
@@ -184,6 +191,26 @@ class CosplayRepositoryImpl @Inject constructor() : CosplayRepository {
 
     override suspend fun getCosplayLastPage(): Int {
         return lastPage ?: 0
+    }
+
+    override suspend fun getSearchQueries(): Flow<List<SearchQuery>> {
+        return searchQueryDao.getSearchQueries().transform { list ->
+            emit(list.map { searchQueryEntity ->
+                searchQueryEntity.toSearchQuery()
+            })
+        }
+    }
+
+    override suspend fun upsertSearchQuery(searchItem: SearchQuery) {
+        searchQueryDao.upsertSearchQuery(searchItem = searchItem.toSearchQueryEntity())
+    }
+
+    override suspend fun deleteSearchQueryById(searchItem: SearchQuery) {
+        searchQueryDao.deleteById(searchItem = searchItem.toSearchQueryEntity())
+    }
+
+    override suspend fun deleteAllSearchQueries() {
+        searchQueryDao.deleteAllSearchQueries()
     }
 
     private fun getCosplaysFromUrl(url: String): List<CosplayPreview> {

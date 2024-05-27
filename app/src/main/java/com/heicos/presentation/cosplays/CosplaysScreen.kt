@@ -396,9 +396,7 @@ fun CosplaysScreen(
                                     item = historyItem,
                                     onDelete = {
                                         viewModel.onEvent(
-                                            CosplaysScreenEvents.DeleteSearchItem(
-                                                historyItem
-                                            )
+                                            CosplaysScreenEvents.DeleteSearchItem(historyItem)
                                         )
                                     }
                                 ) { item ->
@@ -421,7 +419,7 @@ fun CosplaysScreen(
                                     ListItem(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQuery) },
+                                            .clickable { viewModel.onEvent(CosplaysScreenEvents.DeleteHistoryQueries) },
                                         headlineContent = { Text(text = stringResource(id = R.string.clean)) },
                                         leadingContent = {
                                             Icon(

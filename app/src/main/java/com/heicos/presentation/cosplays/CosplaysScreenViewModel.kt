@@ -4,10 +4,13 @@ import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heicos.data.database.SearchQueryDao
 import com.heicos.domain.model.SearchQuery
+import com.heicos.domain.use_case.DeleteAllSearchQueriesUseCase
+import com.heicos.domain.use_case.DeleteSearchQueryByIdUseCase
 import com.heicos.domain.use_case.GetCosplaysLastPageUseCase
 import com.heicos.domain.use_case.GetCosplaysUseCase
+import com.heicos.domain.use_case.GetSearchQueriesUseCase
+import com.heicos.domain.use_case.UpsertSearchQueryUseCase
 import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +24,10 @@ import javax.inject.Inject
 class CosplaysScreenViewModel @Inject constructor(
     private val getCosplaysUseCase: GetCosplaysUseCase,
     private val getCosplaysLastPageUseCase: GetCosplaysLastPageUseCase,
-    private val searchQueryDao: SearchQueryDao
+    private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
+    private val upsertSearchQueryUseCase: UpsertSearchQueryUseCase,
+    private val deleteSearchQueryByIdUseCase: DeleteSearchQueryByIdUseCase,
+    private val deleteAllSearchQueriesUseCase: DeleteAllSearchQueriesUseCase
 ) : ViewModel() {
 
     private var isSearching = false
@@ -69,21 +75,23 @@ class CosplaysScreenViewModel @Inject constructor(
                 if (queryContains == null) {
                     val searchQuery = SearchQuery(query = event.query)
                     viewModelScope.launch {
-                        searchQueryDao.upsertSearchQuery(searchQuery)
+                        upsertSearchQueryUseCase(searchQuery)
                     }
                 }
                 loadNextCosplays()
             }
 
-            is CosplaysScreenEvents.DeleteHistoryQuery -> {
+            is CosplaysScreenEvents.DeleteHistoryQueries -> {
                 viewModelScope.launch {
-                    searchQueryDao.deleteAllSearchQueries()
+                    deleteAllSearchQueriesUseCase()
+                    clearHistoryQueries()
                 }
             }
 
             is CosplaysScreenEvents.DeleteSearchItem -> {
                 viewModelScope.launch {
-                    searchQueryDao.deleteById(event.searchItem)
+                    deleteSearchQueryByIdUseCase(event.searchItem)
+                    clearHistoryQueries()
                 }
             }
 
@@ -151,7 +159,6 @@ class CosplaysScreenViewModel @Inject constructor(
                         result.data?.let { data ->
                             _state.value = if (data.isNotEmpty()) {
                                 _state.value.copy(
-                                    //currentPage = _state.value.currentPage,
                                     nextPage = if (_state.value.reversedMode)
                                         _state.value.nextPage - 1 else _state.value.nextPage + 1,
                                     isLoading = false,
@@ -204,7 +211,7 @@ class CosplaysScreenViewModel @Inject constructor(
 
     private fun loadSearchQueries() {
         viewModelScope.launch {
-            val queries = searchQueryDao.getSearchQueries()
+            val queries = getSearchQueriesUseCase()
             queries.collect { searchQuery ->
                 if (searchQuery.isEmpty()) {
                     _state.value = _state.value.copy(
@@ -229,6 +236,14 @@ class CosplaysScreenViewModel @Inject constructor(
                 lastPage = page
             )
         }
+    }
+
+    private fun clearHistoryQueries() {
+        _state.value = _state.value.copy(
+            isHistoryLoading = false,
+            isHistoryIsEmpty = true,
+            history = emptyList()
+        )
     }
 
     companion object {

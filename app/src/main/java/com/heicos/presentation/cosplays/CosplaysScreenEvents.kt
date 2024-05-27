@@ -12,6 +12,6 @@ sealed class CosplaysScreenEvents {
     data object Reset : CosplaysScreenEvents()
     data object Refresh : CosplaysScreenEvents()
     data object LoadNextData : CosplaysScreenEvents()
-    data object DeleteHistoryQuery : CosplaysScreenEvents()
+    data object DeleteHistoryQueries : CosplaysScreenEvents()
     data object LoadSearchQueries : CosplaysScreenEvents()
 }
