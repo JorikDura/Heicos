@@ -30,7 +30,7 @@ object AppModule {
         return Room.databaseBuilder(
             applicationContext,
             CosplaysDataBase::class.java,
-            "cosplay.db"
+            "queries.db"
         ).build()
     }
 }
