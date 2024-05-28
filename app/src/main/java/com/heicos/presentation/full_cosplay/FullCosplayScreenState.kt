@@ -7,5 +7,6 @@ data class FullCosplayScreenState(
     val cosplaysPhotoUrl: List<String> = emptyList(),
     val cosplayTags: List<String> = emptyList(),
     val message: String? = null,
-    val messageInMoreInfo: String? = null
+    val messageInMoreInfo: String? = null,
+    val datetime: String? = null,
 )

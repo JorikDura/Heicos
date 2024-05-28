@@ -1,5 +1,6 @@
 package com.heicos.presentation.cosplays
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,23 +19,22 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
-import com.heicos.ui.theme.HeicosTheme
 
 @Composable
 fun CosplayScreenItem(
     modifier: Modifier = Modifier,
     cosplay: CosplayPreview,
+    navController: NavController,
     onItemClickListener: () -> Unit
 ) {
     Card(
@@ -99,25 +99,20 @@ fun CosplayScreenItem(
                 maxLines = 2,
                 color = Color.White
             )
-        }
-    }
-}
 
-@Preview
-@PreviewLightDark
-@PreviewDynamicColors
-@Composable
-fun Preview() {
-    HeicosTheme {
-        CosplayScreenItem(
-            cosplay = CosplayPreview(
-                pageUrl = "",
-                storyPageUrl = "",
-                previewUrl = "",
-                title = "Shock loshock",
-                date = "2022.20002.02"
-            ),
-            onItemClickListener =  {}
-        )
+
+            val isDownloaded =
+                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title) == true
+
+            if (isDownloaded || cosplay.isDownloaded) {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 4.dp, end = 4.dp),
+                    painter = painterResource(id = R.drawable.micro_sticker),
+                    contentDescription = null
+                )
+            }
+        }
     }
 }

@@ -83,6 +83,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.heicos.R
 import com.heicos.presentation.cosplays.types.CosplayTypes
 import com.heicos.presentation.destinations.AboutScreenDestination
@@ -105,13 +106,14 @@ import kotlinx.coroutines.launch
 fun CosplaysScreen(
     viewModel: CosplaysScreenViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
-    resultRecipient: ResultRecipient<FullCosplayScreenDestination, String>
+    resultRecipientTag: ResultRecipient<FullCosplayScreenDestination, String>,
+    navController: NavController
 ) {
     var query by remember {
         mutableStateOf(viewModel.searchQuery)
     }
 
-    resultRecipient.onNavResult { result ->
+    resultRecipientTag.onNavResult { result ->
         when (result) {
             is NavResult.Canceled -> Unit
 
@@ -121,6 +123,7 @@ fun CosplaysScreen(
             }
         }
     }
+
     val scope = rememberCoroutineScope()
     val gridCells = 2
     val state by viewModel.state.collectAsState()
@@ -464,6 +467,7 @@ fun CosplaysScreen(
                         items(state.cosplays) { cosplay ->
                             CosplayScreenItem(
                                 cosplay = cosplay,
+                                navController = navController,
                                 onItemClickListener = {
                                     navigator.navigate(
                                         FullCosplayScreenDestination(

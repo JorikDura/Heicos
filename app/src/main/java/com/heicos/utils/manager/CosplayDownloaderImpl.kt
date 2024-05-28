@@ -27,7 +27,7 @@ class CosplayDownloaderImpl @Inject constructor(
 
         val request = DownloadManager.Request(url.toUri())
             .setMimeType("image/jpeg")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
             .setTitle(fileName)
             .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Heicos/$fileName")
 

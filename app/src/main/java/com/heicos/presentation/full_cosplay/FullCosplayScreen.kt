@@ -76,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -112,8 +113,9 @@ fun FullCosplayScreen(
     cosplayName: String = "",
     cosplayPreview: CosplayPreview = CosplayPreview(),
     viewModel: FullCosplayScreenViewModel = hiltViewModel(),
+    navController: NavController,
     navigator: DestinationsNavigator,
-    resultNavigator: ResultBackNavigator<String>
+    resultNavigatorTag: ResultBackNavigator<String>
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -197,6 +199,9 @@ fun FullCosplayScreen(
                                 onClick = {
                                     viewModel.onEvent(FullCosplayScreenEvents.DownloadAllImages)
                                     expanded = false
+                                    navController.previousBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.set(cosplayPreview.title, true)
                                 }
                             )
                             if (isPagerMode) {
@@ -210,6 +215,9 @@ fun FullCosplayScreen(
                                             )
                                         )
                                         expanded = false
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set(cosplayPreview.title, true)
                                     }
                                 )
                                 HorizontalDivider()
@@ -363,6 +371,18 @@ fun FullCosplayScreen(
                             text = stringResource(id = R.string.total, state.cosplaysPhotoUrl.size)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
+
+                        if (state.datetime != null) {
+                            Text(
+                                fontSize = 18.sp,
+                                text = stringResource(
+                                    id = R.string.datetime,
+                                    state.datetime ?: ""
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+
                         when {
                             state.tagsIsLoading -> {
                                 Box(
@@ -402,7 +422,7 @@ fun FullCosplayScreen(
                                             TagContainer(
                                                 text = tag,
                                                 onClickListener = {
-                                                    resultNavigator.navigateBack(result = tag)
+                                                    resultNavigatorTag.navigateBack(result = tag)
                                                 }
                                             )
                                         }

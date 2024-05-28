@@ -3,8 +3,7 @@ package com.heicos.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.heicos.data.database.SearchQueryDao
-import com.heicos.data.database.SearchQueryDataBase
+import com.heicos.data.database.CosplaysDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,13 +24,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSearchQueryDao(
+    fun provideCosplayDataBase(
         applicationContext: Context
-    ): SearchQueryDao {
+    ): CosplaysDataBase {
         return Room.databaseBuilder(
             applicationContext,
-            SearchQueryDataBase::class.java,
-            "queries.db"
-        ).build().dao
+            CosplaysDataBase::class.java,
+            "cosplay.db"
+        ).build()
     }
 }

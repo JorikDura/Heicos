@@ -32,5 +32,6 @@
     <string name="last_page">Последняя страница: %1$s</string>
     <string name="share">Поделиться</string>
     <string name="of_pages">из</string>
+    <string name="datetime">Время загрузки: %1$s</string>
 
 </resources>

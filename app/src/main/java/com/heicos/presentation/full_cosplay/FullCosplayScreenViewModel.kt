@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetCosplayTagsUseCase
 import com.heicos.domain.use_case.GetFullCosplayUseCase
+import com.heicos.domain.use_case.UpsertCosplayPreviewUseCase
 import com.heicos.utils.Resource
 import com.heicos.utils.manager.CosplayDownloader
+import com.heicos.utils.time.convertTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class FullCosplayScreenViewModel @Inject constructor(
     private val getFullCosplayUseCase: GetFullCosplayUseCase,
     private val getCosplayTagsUseCase: GetCosplayTagsUseCase,
+    private val upsertCosplayPreviewUseCase: UpsertCosplayPreviewUseCase,
     private val cosplayDownloader: CosplayDownloader,
     private val savedState: SavedStateHandle
 ) : ViewModel() {
@@ -84,6 +87,9 @@ class FullCosplayScreenViewModel @Inject constructor(
         when (event) {
             FullCosplayScreenEvents.DownloadAllImages -> {
                 downloadAllImages()
+                val time = System.currentTimeMillis()
+                viewModelScope.launch { upsertCosplayPreviewUseCase(cosplayPreview, time) }
+                addTime(time)
             }
 
             FullCosplayScreenEvents.LoadCosplayTags -> {
@@ -92,6 +98,9 @@ class FullCosplayScreenViewModel @Inject constructor(
 
             is FullCosplayScreenEvents.DownloadImage -> {
                 downloadImage(event.url)
+                val time = System.currentTimeMillis()
+                viewModelScope.launch { upsertCosplayPreviewUseCase(cosplayPreview, time) }
+                addTime(time)
             }
 
             is FullCosplayScreenEvents.ScrollToItem -> {
@@ -153,6 +162,12 @@ class FullCosplayScreenViewModel @Inject constructor(
     private fun getCosplayName(): String {
         return savedState.get<String>("cosplayName")
             ?: throw IllegalArgumentException("Argument can't be null")
+    }
+
+    private fun addTime(time: Long) {
+        _state.value = _state.value.copy(
+            datetime = convertTime(time)
+        )
     }
 
 }

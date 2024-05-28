@@ -1,6 +1,7 @@
 package com.heicos.data.repository
 
-import com.heicos.data.database.SearchQueryDao
+import com.heicos.data.database.CosplaysDataBase
+import com.heicos.data.mapper.toCosplayPreviewEntity
 import com.heicos.data.mapper.toSearchQuery
 import com.heicos.data.mapper.toSearchQueryEntity
 import com.heicos.domain.model.CosplayPreview
@@ -8,6 +9,7 @@ import com.heicos.domain.model.SearchQuery
 import com.heicos.domain.repository.CosplayRepository
 import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
+import com.heicos.utils.time.convertTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
@@ -16,7 +18,7 @@ import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class CosplayRepositoryImpl @Inject constructor(
-    private val searchQueryDao: SearchQueryDao
+    private val dataBase: CosplaysDataBase
 ) : CosplayRepository {
     private var lastPage: Int? = null
     override suspend fun getCosplays(
@@ -194,7 +196,7 @@ class CosplayRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSearchQueries(): Flow<List<SearchQuery>> {
-        return searchQueryDao.getSearchQueries().transform { list ->
+        return dataBase.searchDao.getSearchQueries().transform { list ->
             emit(list.map { searchQueryEntity ->
                 searchQueryEntity.toSearchQuery()
             })
@@ -202,18 +204,23 @@ class CosplayRepositoryImpl @Inject constructor(
     }
 
     override suspend fun upsertSearchQuery(searchItem: SearchQuery) {
-        searchQueryDao.upsertSearchQuery(searchItem = searchItem.toSearchQueryEntity())
+        dataBase.searchDao.upsertSearchQuery(searchItem = searchItem.toSearchQueryEntity())
     }
 
     override suspend fun deleteSearchQueryById(searchItem: SearchQuery) {
-        searchQueryDao.deleteById(searchItem = searchItem.toSearchQueryEntity())
+        dataBase.searchDao.deleteById(searchItem = searchItem.toSearchQueryEntity())
     }
 
     override suspend fun deleteAllSearchQueries() {
-        searchQueryDao.deleteAllSearchQueries()
+        dataBase.searchDao.deleteAllSearchQueries()
     }
 
-    private fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
+    override suspend fun upsertCosplayPreview(cosplayPreview: CosplayPreview, time: Long) {
+        dataBase.cosplayDao.upsertCosplayPreview(cosplayPreview.toCosplayPreviewEntity(time))
+    }
+
+    private suspend fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
+        val cosplaysDataBase = dataBase.cosplayDao.getCosplayPreviews()
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
 
@@ -259,13 +266,26 @@ class CosplayRepositoryImpl @Inject constructor(
                 .eq(i)
                 .text()
 
+            val cosplay = cosplaysDataBase.find {
+                it.name == title
+            }
+
+            val datetime = if (cosplay?.createdAt != null)
+                convertTime(cosplay.createdAt)
+            else null
+
+
+
             result.add(
                 CosplayPreview(
+                    id = cosplay?.id ?: 0,
                     pageUrl = pageUrl,
                     storyPageUrl = storyPageUrl,
                     previewUrl = image,
                     title = title,
-                    date = date
+                    date = date,
+                    isDownloaded = cosplay != null,
+                    downloadTime = datetime
                 )
             )
         }

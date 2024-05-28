@@ -32,5 +32,6 @@
     <string name="last_page">Last page: %1$s</string>
     <string name="share">Share</string>
     <string name="of_pages">of</string>
+    <string name="datetime">Download time: %1$s</string>
 
 </resources>
