@@ -15,7 +15,7 @@ For example, image quality may be bad or something can't be loaded because of cl
 <br>
 That's all.
 <h1>Русский</h1>
-Андроид приложение-<b>парсер</b> сайта hentai-cosplays.com<br>
+Андроид приложение-<b>парсер</b> сайта hentai-cosplay-xxx.com<br>
 Возможности:
 <ul>
   <li>Смотреть косплеи</li>
