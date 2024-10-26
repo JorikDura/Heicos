@@ -1,5 +1,5 @@
 <h1>English</h1>
-Android app-<b>parser</b> for site hentai-cosplays.com<br>
+Android app-<b>parser</b> for site hentai-cosplay-xxx.com<br>
 Features:
 <ul>
   <li>Watch cosplays</li>
