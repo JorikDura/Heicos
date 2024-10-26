@@ -29,7 +29,7 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             when (cosplayType) {
                 CosplayType.New -> {
-                    val url = "https://hentai-cosplays.com/search/page/$page/"
+                    val url = "$BASE_URL/search/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -55,7 +55,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 }
 
                 CosplayType.Ranking -> {
-                    val url = "https://hentai-cosplays.com/ranking/page/$page/"
+                    val url = "$BASE_URL/ranking/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -81,7 +81,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 }
 
                 CosplayType.Recently -> {
-                    val url = "https://hentai-cosplays.com/recently/page/$page/"
+                    val url = "$BASE_URL/recently/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -108,7 +108,7 @@ class CosplayRepositoryImpl @Inject constructor(
 
                 is CosplayType.Search -> {
                     val url =
-                        "https://hentai-cosplays.com/search/keyword/${cosplayType.query}/page/$page/"
+                        "$BASE_URL/search/keyword/${cosplayType.query}/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -142,7 +142,7 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             try {
                 val result = mutableListOf<String>()
-                val fullUrl = "https://hentai-cosplays.com$url"
+                val fullUrl = "$BASE_URL$url"
                 val doc = Jsoup.connect(fullUrl).get()
 
                 doc.select("amp-img.auto-style").forEach { image ->
@@ -235,7 +235,7 @@ class CosplayRepositoryImpl @Inject constructor(
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =
-                "https://hentai-cosplays.com" + imageList.select("div.image-list-item-image")
+                BASE_URL + imageList.select("div.image-list-item-image")
                     .select("a")
                     .eq(i)
                     .attr("href")
@@ -294,5 +294,6 @@ class CosplayRepositoryImpl @Inject constructor(
 
     companion object {
         private const val ERROR_MESSAGE = "Something bad happened"
+        private const val BASE_URL = "https://hentai-cosplay-xxx.com"
     }
 }
