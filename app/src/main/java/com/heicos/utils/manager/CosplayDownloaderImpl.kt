@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import androidx.core.net.toUri
+import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import javax.inject.Inject
 
 class CosplayDownloaderImpl @Inject constructor(
@@ -14,7 +15,7 @@ class CosplayDownloaderImpl @Inject constructor(
     override fun downloadFile(url: String, name: String): Long {
         val fileType = url.reversed().substringBefore("/").reversed()
         val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
-        val fileName = if (name.isNotEmpty()) {
+        var fileName = if (name.isNotEmpty()) {
             "${name}_${id}_${fileType}".replace("/", "-")
         } else {
             val date = if (url.contains("video")) {
@@ -25,9 +26,19 @@ class CosplayDownloaderImpl @Inject constructor(
             "${id}_${date}_${fileType}"
         }
 
+        fileName = fileName.replace(
+            regex = Regex("['\"\\[\\]]*"),
+            replacement = ""
+        )
+
+        fileName = fileName.replace(
+            oldValue = " ",
+            newValue = "_"
+        )
+
         val request = DownloadManager.Request(url.toUri())
-            .setMimeType("image/jpeg")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .addRequestHeader("User-Agent", USER_AGENT_MOZILLA)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setTitle(fileName)
             .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Heicos/$fileName")
 
