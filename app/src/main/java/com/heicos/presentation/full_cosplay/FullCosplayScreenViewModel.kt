@@ -1,9 +1,11 @@
 package com.heicos.presentation.full_cosplay
 
+import android.os.Build
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.heicos.BuildConfig
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.use_case.GetCosplayTagsUseCase
 import com.heicos.domain.use_case.GetFullCosplayUseCase
@@ -41,7 +43,7 @@ class FullCosplayScreenViewModel @Inject constructor(
             cosplayPreview =
                 CosplayPreview(
                     title = cosplayName,
-                    pageUrl = "https://hentai-cosplays.com//image/${cosplayName}",
+                    pageUrl =  "${BuildConfig.baseUrl}/image/${cosplayName}",
                     storyPageUrl = "/story/${cosplayName}/"
                 )
             _state.value = _state.value.copy(

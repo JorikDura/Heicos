@@ -1,5 +1,6 @@
 package com.heicos.data.repository
 
+import com.heicos.BuildConfig
 import com.heicos.data.database.CosplaysDataBase
 import com.heicos.data.mapper.toCosplayPreviewEntity
 import com.heicos.data.mapper.toSearchQuery
@@ -29,7 +30,7 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             when (cosplayType) {
                 CosplayType.New -> {
-                    val url = "$BASE_URL/search/page/$page/"
+                    val url = "${BuildConfig.baseUrl}/search/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -55,7 +56,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 }
 
                 CosplayType.Ranking -> {
-                    val url = "$BASE_URL/ranking/page/$page/"
+                    val url = "${BuildConfig.baseUrl}/ranking/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -81,7 +82,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 }
 
                 CosplayType.Recently -> {
-                    val url = "$BASE_URL/recently/page/$page/"
+                    val url = "${BuildConfig.baseUrl}/recently/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -108,7 +109,7 @@ class CosplayRepositoryImpl @Inject constructor(
 
                 is CosplayType.Search -> {
                     val url =
-                        "$BASE_URL/search/keyword/${cosplayType.query}/page/$page/"
+                        "${BuildConfig.baseUrl}/search/keyword/${cosplayType.query}/page/$page/"
                     val result = try {
                         getCosplaysFromUrl(url)
                     } catch (e: HttpStatusException) {
@@ -142,7 +143,7 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             try {
                 val result = mutableListOf<String>()
-                val fullUrl = "$BASE_URL$url"
+                val fullUrl = "${BuildConfig.baseUrl}$url"
                 val doc = Jsoup.connect(fullUrl).get()
 
                 doc.select("amp-img.auto-style").forEach { image ->
@@ -235,7 +236,7 @@ class CosplayRepositoryImpl @Inject constructor(
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =
-                BASE_URL + imageList.select("div.image-list-item-image")
+            BuildConfig.baseUrl + imageList.select("div.image-list-item-image")
                     .select("a")
                     .eq(i)
                     .attr("href")
@@ -274,8 +275,6 @@ class CosplayRepositoryImpl @Inject constructor(
                 convertTime(cosplay.createdAt)
             else null
 
-
-
             result.add(
                 CosplayPreview(
                     id = cosplay?.id ?: 0,
@@ -294,6 +293,5 @@ class CosplayRepositoryImpl @Inject constructor(
 
     companion object {
         private const val ERROR_MESSAGE = "Something bad happened"
-        private const val BASE_URL = "https://hentai-cosplay-xxx.com"
     }
 }

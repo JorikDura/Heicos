@@ -31,7 +31,7 @@ android {
         minSdk = 27
         targetSdk = 34
         versionCode = 1
-        versionName = "1.7"
+        versionName = "1.8.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -57,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -64,6 +65,22 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        release {
+            buildConfigField(
+                type = "String",
+                name = "baseUrl",
+                value = "\"https://hentai-cosplay-xxx.com\""
+            )
+        }
+        debug {
+            buildConfigField(
+                type = "String",
+                name = "baseUrl",
+                value = "\"https://hentai-cosplay-xxx.com\""
+            )
         }
     }
 }
