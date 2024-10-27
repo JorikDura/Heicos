@@ -221,7 +221,6 @@ class CosplayRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
-        val cosplaysDataBase = dataBase.cosplayDao.getCosplayPreviews()
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
 
@@ -236,7 +235,7 @@ class CosplayRepositoryImpl @Inject constructor(
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =
-            BuildConfig.baseUrl + imageList.select("div.image-list-item-image")
+                BuildConfig.baseUrl + imageList.select("div.image-list-item-image")
                     .select("a")
                     .eq(i)
                     .attr("href")
@@ -267,27 +266,30 @@ class CosplayRepositoryImpl @Inject constructor(
                 .eq(i)
                 .text()
 
-            val cosplay = cosplaysDataBase.find {
-                it.name == title
-            }
-
-            val datetime = if (cosplay?.createdAt != null)
-                convertTime(cosplay.createdAt)
-            else null
-
             result.add(
                 CosplayPreview(
-                    id = cosplay?.id ?: 0,
                     pageUrl = pageUrl,
                     storyPageUrl = storyPageUrl,
                     previewUrl = image,
                     title = title,
                     date = date,
-                    isDownloaded = cosplay != null,
-                    downloadTime = datetime
                 )
             )
         }
+
+        val cosplaysDataBase = dataBase.cosplayDao.getCosplayPreviews(result.map { it.title })
+
+        cosplaysDataBase.forEach { databaseItem ->
+            val index = result.indexOfFirst {
+                it.title == databaseItem.name
+            }
+            with(result[index]) {
+                id = databaseItem.id
+                isDownloaded = true
+                downloadTime = convertTime(databaseItem.createdAt)
+            }
+        }
+
         return result
     }
 
