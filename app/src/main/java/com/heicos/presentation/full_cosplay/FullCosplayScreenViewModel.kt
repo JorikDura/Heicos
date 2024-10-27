@@ -1,6 +1,5 @@
 package com.heicos.presentation.full_cosplay
 
-import android.os.Build
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -43,7 +42,7 @@ class FullCosplayScreenViewModel @Inject constructor(
             cosplayPreview =
                 CosplayPreview(
                     title = cosplayName,
-                    pageUrl =  "${BuildConfig.baseUrl}/image/${cosplayName}",
+                    pageUrl = "${BuildConfig.baseUrl}/image/${cosplayName}",
                     storyPageUrl = "/story/${cosplayName}/"
                 )
             _state.value = _state.value.copy(
