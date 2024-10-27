@@ -37,3 +37,9 @@ That's all.
 Картинки могут быть плохого качества, а некоторые в принципе не загрузятся ввиду защиты на нескольких доменах с cloudflare.
 
 На этом все.
+
+## Preview
+
+Blur video:
+
+<video src = "https://github.com/user-attachments/assets/f4243982-4928-4c67-838d-4fff80ea1f8e"></video>
