@@ -373,12 +373,12 @@ fun FullCosplayScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        if (state.datetime != null) {
+                        if (state.downloadTime != null) {
                             Text(
                                 fontSize = 18.sp,
                                 text = stringResource(
                                     id = R.string.datetime,
-                                    state.datetime ?: ""
+                                    state.downloadTime ?: ""
                                 )
                             )
                             Spacer(modifier = Modifier.height(4.dp))

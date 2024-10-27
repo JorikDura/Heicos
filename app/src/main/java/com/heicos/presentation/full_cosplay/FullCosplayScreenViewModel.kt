@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,6 +38,11 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     init {
         cosplayPreview = getCosplayPreview()
+
+        _state.update {
+            it.copy(downloadTime = cosplayPreview.downloadTime)
+        }
+
         if (cosplayPreview.storyPageUrl.isEmpty()) {
             val cosplayName = getCosplayName()
             cosplayPreview =
@@ -49,6 +55,7 @@ class FullCosplayScreenViewModel @Inject constructor(
                 title = cosplayName
             )
         }
+
         loadCosplays()
     }
 
@@ -167,7 +174,7 @@ class FullCosplayScreenViewModel @Inject constructor(
 
     private fun addTime(time: Long) {
         _state.value = _state.value.copy(
-            datetime = convertTime(time)
+            downloadTime = convertTime(time)
         )
     }
 
