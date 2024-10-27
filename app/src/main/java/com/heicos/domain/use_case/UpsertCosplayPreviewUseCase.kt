@@ -9,7 +9,7 @@ class UpsertCosplayPreviewUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(cosplayPreview: CosplayPreview, time: Long) {
-        return repository.upsertCosplayPreview(cosplayPreview, time)
+        repository.upsertCosplayPreview(cosplayPreview, time)
     }
 
 }
