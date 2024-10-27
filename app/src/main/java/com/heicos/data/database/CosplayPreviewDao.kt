@@ -10,6 +10,6 @@ interface CosplayPreviewDao {
     @Upsert
     suspend fun upsertCosplayPreview(cosplayPreviewEntity: CosplayPreviewEntity)
 
-    @Query("SELECT * FROM CosplayPreviewEntity")
-    suspend fun getCosplayPreviews(): List<CosplayPreviewEntity>
+    @Query("SELECT * FROM CosplayPreviewEntity where name IN (:names) LIMIT 20")
+    suspend fun getCosplayPreviews(names: List<String>): List<CosplayPreviewEntity>
 }
