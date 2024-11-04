@@ -81,7 +81,6 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Dimension
-import com.heicos.BuildConfig
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.ErrorMessage
@@ -104,7 +103,7 @@ import kotlin.math.abs
 @Destination(
     deepLinks = [
         DeepLink(
-            uriPattern = "${BuildConfig.baseUrl}/image/{cosplayName}/",
+            uriPattern = "https://hentai-cosplay-xxx.com/image/{cosplayName}/",
             action = Intent.ACTION_VIEW
         )
     ]
