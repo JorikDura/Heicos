@@ -43,3 +43,11 @@ That's all.
 Blur video:
 
 <video src = "https://github.com/user-attachments/assets/f4243982-4928-4c67-838d-4fff80ea1f8e"></video>
+
+## Deep links
+
+You can open `heicos` from another app by pressing the hentai-cosplay type link.
+
+But first you need to enable this feature in the app settings.
+
+<img src="https://github.com/user-attachments/assets/ce33f718-1de4-4cea-9e35-b343a363e8b6" width="420" height="640">
