@@ -4,7 +4,7 @@ plugins {
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
     id("kotlin-parcelize")
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.20"
 }
 
 kotlin {
@@ -66,7 +66,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
