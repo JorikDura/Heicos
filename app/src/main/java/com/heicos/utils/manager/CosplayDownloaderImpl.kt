@@ -40,7 +40,7 @@ class CosplayDownloaderImpl @Inject constructor(
             .addRequestHeader("User-Agent", USER_AGENT_MOZILLA)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setTitle(fileName)
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Heicos/$fileName")
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Heicos/$fileName")
 
         return downloadManager.enqueue(request)
     }
