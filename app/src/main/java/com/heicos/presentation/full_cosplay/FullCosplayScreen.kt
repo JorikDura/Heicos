@@ -84,6 +84,8 @@ import coil.size.Dimension
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.presentation.util.ErrorMessage
+import com.heicos.presentation.util.IS_DOWNLOADED
+import com.heicos.presentation.util.IS_VIEWED
 import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 import com.ramcosta.composedestinations.annotation.DeepLink
@@ -119,7 +121,7 @@ fun FullCosplayScreen(
 ) {
     navController.previousBackStackEntry
         ?.savedStateHandle
-        ?.set(cosplayPreview.title + "is_viewed", true)
+        ?.set(cosplayPreview.title + IS_VIEWED, true)
 
     val state by viewModel.state.collectAsState()
 
@@ -205,7 +207,7 @@ fun FullCosplayScreen(
                                     expanded = false
                                     navController.previousBackStackEntry
                                         ?.savedStateHandle
-                                        ?.set(cosplayPreview.title + "_isDownloaded", true)
+                                        ?.set(cosplayPreview.title + IS_DOWNLOADED, true)
                                 }
                             )
                             if (isPagerMode) {
@@ -221,7 +223,7 @@ fun FullCosplayScreen(
                                         expanded = false
                                         navController.previousBackStackEntry
                                             ?.savedStateHandle
-                                            ?.set(cosplayPreview.title + "_isDownloaded", true)
+                                            ?.set(cosplayPreview.title + IS_DOWNLOADED, true)
                                     }
                                 )
                                 HorizontalDivider()
