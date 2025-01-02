@@ -191,11 +191,11 @@ fun FullCosplayScreen(
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.share)) },
                                 onClick = {
-                                    Intent(Intent.ACTION_SEND).also {
-                                        it.putExtra(Intent.EXTRA_TEXT, cosplayPreview.pageUrl)
-                                        it.type = "text/plain"
-                                        context.startActivity(it)
-                                    }
+                                    Intent.createChooser(Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, cosplayPreview.pageUrl)
+                                        type = "text/plain"
+                                    }, null).also { context.startActivity(it) }
                                     expanded = false
                                 }
                             )
