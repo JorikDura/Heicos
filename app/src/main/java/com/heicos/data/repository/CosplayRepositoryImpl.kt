@@ -1,5 +1,6 @@
 package com.heicos.data.repository
 
+import android.util.Log
 import com.heicos.BuildConfig
 import com.heicos.data.database.CosplaysDataBase
 import com.heicos.data.mapper.toCosplayPreviewEntity
@@ -133,6 +134,27 @@ class CosplayRepositoryImpl @Inject constructor(
                         emit(Resource.Success(data = result))
                     }
                 }
+
+                CosplayType.RecentlyViewed -> {
+                    val offset = if (page > 1) (page - 1) * 20 else 0
+
+                    val databaseCosplays = dataBase.cosplayDao.getRecentlyViewedCosplays(offset)
+
+                    val result = databaseCosplays.map { cosplay ->
+                        with(cosplay) {
+                            CosplayPreview(
+                                pageUrl = url,
+                                storyPageUrl = storyPageUrl,
+                                previewUrl = previewUrl,
+                                title = name,
+                                isViewed = true,
+                                isDownloaded = downloadedAt != null
+                            )
+                        }
+                    }
+
+                    emit(Resource.Success(data = result))
+                }
             }
             emit(Resource.Loading(isLoading = false))
         }
@@ -216,8 +238,14 @@ class CosplayRepositoryImpl @Inject constructor(
         dataBase.searchDao.deleteAllSearchQueries()
     }
 
-    override suspend fun upsertCosplayPreview(cosplayPreview: CosplayPreview, time: Long) {
-        dataBase.cosplayDao.upsertCosplayPreview(cosplayPreview.toCosplayPreviewEntity(time))
+    override suspend fun upsertCosplayPreview(
+        cosplayPreview: CosplayPreview,
+        time: Long?,
+        isDownloaded: Boolean
+    ): Long {
+        val entity = cosplayPreview.toCosplayPreviewEntity(time, isDownloaded)
+
+        return dataBase.cosplayDao.upsertCosplayPreview(entity)
     }
 
     private suspend fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
@@ -285,8 +313,10 @@ class CosplayRepositoryImpl @Inject constructor(
             }
             with(result[index]) {
                 id = databaseItem.id
-                isDownloaded = true
-                downloadTime = convertTime(databaseItem.createdAt)
+                isDownloaded = databaseItem.downloadedAt != null
+                downloadedAt = databaseItem.downloadedAt
+                downloadTime = databaseItem.downloadedAt?.let { convertTime(it) }
+                isViewed = true
             }
         }
 

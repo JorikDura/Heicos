@@ -104,7 +104,7 @@ fun CosplayScreenItem(
 
 
             val isDownloaded =
-                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title) == true
+                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + "_isDownloaded") == true
 
             if (isDownloaded || cosplay.isDownloaded) {
                 Icon(
@@ -112,6 +112,20 @@ fun CosplayScreenItem(
                         .align(Alignment.TopEnd)
                         .padding(top = 4.dp, end = 4.dp),
                     imageVector = ImageVector.vectorResource(R.drawable.download_icon),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            val isViewed =
+                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + "is_viewed") == true
+
+            if (isViewed || cosplay.isViewed) {
+                Icon(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 4.dp, start = 4.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.is_viewed_eye),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
                 )

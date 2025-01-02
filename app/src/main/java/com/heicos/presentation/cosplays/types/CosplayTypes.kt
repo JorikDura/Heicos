@@ -3,9 +3,11 @@ package com.heicos.presentation.cosplays.types
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.twotone.Home
+import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Star
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,5 +37,11 @@ enum class CosplayTypes(
         selectedIcon = Icons.TwoTone.Refresh,
         icon = Icons.Outlined.Refresh,
         cosplayType = CosplayType.Recently
+    ),
+    RecentlyViewed(
+        title = R.string.navigation_item_recently_viewed,
+        selectedIcon = Icons.TwoTone.Info,
+        icon = Icons.Outlined.Info,
+        cosplayType = CosplayType.RecentlyViewed
     )
 }

@@ -57,6 +57,15 @@ class FullCosplayScreenViewModel @Inject constructor(
         }
 
         loadCosplays()
+
+        viewModelScope.launch {
+            val id = upsertCosplayPreviewUseCase(
+                cosplayPreview = cosplayPreview,
+                time = System.currentTimeMillis()
+            )
+
+            cosplayPreview.id = id
+        }
     }
 
     private fun loadCosplays() {
@@ -94,9 +103,16 @@ class FullCosplayScreenViewModel @Inject constructor(
     fun onEvent(event: FullCosplayScreenEvents) {
         when (event) {
             FullCosplayScreenEvents.DownloadAllImages -> {
+                cosplayPreview.isDownloaded = true
                 downloadAllImages()
                 val time = System.currentTimeMillis()
-                viewModelScope.launch { upsertCosplayPreviewUseCase(cosplayPreview, time) }
+                viewModelScope.launch {
+                    upsertCosplayPreviewUseCase(
+                        cosplayPreview = cosplayPreview,
+                        time = time,
+                        isDownloaded = true
+                    )
+                }
                 addTime(time)
             }
 
@@ -105,9 +121,16 @@ class FullCosplayScreenViewModel @Inject constructor(
             }
 
             is FullCosplayScreenEvents.DownloadImage -> {
+                cosplayPreview.isDownloaded = true
                 downloadImage(event.url)
                 val time = System.currentTimeMillis()
-                viewModelScope.launch { upsertCosplayPreviewUseCase(cosplayPreview, time) }
+                viewModelScope.launch {
+                    upsertCosplayPreviewUseCase(
+                        cosplayPreview = cosplayPreview,
+                        time = time,
+                        isDownloaded = true
+                    )
+                }
                 addTime(time)
             }
 

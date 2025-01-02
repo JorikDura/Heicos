@@ -8,7 +8,11 @@ import androidx.room.PrimaryKey
 @Entity(indices = [Index(value = ["name"], unique = true)])
 data class CosplayPreviewEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
+    @ColumnInfo(name = "downloaded_at") val downloadedAt: Long?,
+    @ColumnInfo(defaultValue = "") val url: String,
+    @ColumnInfo(name = "preview_url", defaultValue = "") val previewUrl: String,
+    @ColumnInfo(name = "story_page_url", defaultValue = "") val storyPageUrl: String,
+    @ColumnInfo(name = "viewed_at") val viewedAt: Long?
 )

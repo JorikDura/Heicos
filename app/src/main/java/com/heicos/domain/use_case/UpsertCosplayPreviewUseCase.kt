@@ -8,8 +8,12 @@ class UpsertCosplayPreviewUseCase @Inject constructor(
     private val repository: CosplayRepository
 ) {
 
-    suspend operator fun invoke(cosplayPreview: CosplayPreview, time: Long) {
-        repository.upsertCosplayPreview(cosplayPreview, time)
+    suspend operator fun invoke(
+        cosplayPreview: CosplayPreview,
+        time: Long?,
+        isDownloaded: Boolean = false
+    ): Long {
+        return repository.upsertCosplayPreview(cosplayPreview, time, isDownloaded)
     }
 
 }

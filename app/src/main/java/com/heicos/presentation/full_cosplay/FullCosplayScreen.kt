@@ -117,6 +117,10 @@ fun FullCosplayScreen(
     navigator: DestinationsNavigator,
     resultNavigatorTag: ResultBackNavigator<String>
 ) {
+    navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.set(cosplayPreview.title + "is_viewed", true)
+
     val state by viewModel.state.collectAsState()
 
     if (!state.message.isNullOrEmpty()) {
@@ -201,7 +205,7 @@ fun FullCosplayScreen(
                                     expanded = false
                                     navController.previousBackStackEntry
                                         ?.savedStateHandle
-                                        ?.set(cosplayPreview.title, true)
+                                        ?.set(cosplayPreview.title + "_isDownloaded", true)
                                 }
                             )
                             if (isPagerMode) {
@@ -217,7 +221,7 @@ fun FullCosplayScreen(
                                         expanded = false
                                         navController.previousBackStackEntry
                                             ?.savedStateHandle
-                                            ?.set(cosplayPreview.title, true)
+                                            ?.set(cosplayPreview.title + "_isDownloaded", true)
                                     }
                                 )
                                 HorizontalDivider()

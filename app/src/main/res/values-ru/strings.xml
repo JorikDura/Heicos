@@ -15,6 +15,7 @@
     <string name="search">Поиск</string>
     <string name="clean">Очистить (*/ω＼*)</string>
     <string name="navigation_item_recently">Недавние</string>
+    <string name="navigation_item_recently_viewed">Недавно просмотренные</string>
     <string name="navigation_item_new">Новые</string>
     <string name="navigation_item_ranking">Рейтинг</string>
     <string name="more_info">Больше инфы</string>
