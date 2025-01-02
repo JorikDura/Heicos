@@ -1,6 +1,5 @@
 package com.heicos.data.repository
 
-import android.util.Log
 import com.heicos.BuildConfig
 import com.heicos.data.database.CosplaysDataBase
 import com.heicos.data.mapper.toCosplayPreviewEntity
