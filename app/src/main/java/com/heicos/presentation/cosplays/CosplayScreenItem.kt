@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +31,8 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.heicos.R
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.presentation.util.IS_DOWNLOADED
+import com.heicos.presentation.util.IS_VIEWED
 import com.heicos.presentation.util.USER_AGENT_MOZILLA
 
 @Composable
@@ -102,15 +105,19 @@ fun CosplayScreenItem(
                 color = Color.White
             )
 
-
+            USER_AGENT_MOZILLA
             val isDownloaded =
-                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + "_isDownloaded") == true
+                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + IS_DOWNLOADED) == true
 
             if (isDownloaded || cosplay.isDownloaded) {
                 Icon(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(top = 4.dp, end = 4.dp),
+                        .padding(top = 4.dp, end = 4.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.35F),
+                            shape = CircleShape
+                        ),
                     imageVector = ImageVector.vectorResource(R.drawable.download_icon),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
@@ -118,7 +125,7 @@ fun CosplayScreenItem(
             }
 
             val isViewed =
-                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + "is_viewed") == true
+                navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(cosplay.title + IS_VIEWED) == true
 
             if (isViewed || cosplay.isViewed) {
                 Icon(
