@@ -85,6 +85,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.heicos.R
+import com.heicos.domain.util.CosplayType
 import com.heicos.presentation.cosplays.types.CosplayTypes
 import com.heicos.presentation.destinations.AboutScreenDestination
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
@@ -546,6 +547,11 @@ fun CosplaysScreen(
             viewModel.onEvent(CosplaysScreenEvents.Reset)
             return@BackHandler
         }
+        if (state.currentCosplayType !== CosplayType.New) {
+            viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(CosplayType.New))
+            return@BackHandler
+        }
+
         context.getActivity()?.finish()
     }
 }
