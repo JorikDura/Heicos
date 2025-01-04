@@ -195,6 +195,12 @@ fun CosplaysScreen(
                 Spacer(Modifier.height(12.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
                 Spacer(Modifier.height(12.dp))
+                Text(
+                    modifier = Modifier
+                        .padding(start = 12.dp),
+                    text = stringResource(R.string.filter_pages)
+                )
+                Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
@@ -283,6 +289,14 @@ fun CosplaysScreen(
                     }
                 }
                 Spacer(Modifier.height(12.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    modifier = Modifier
+                        .padding(start = 12.dp),
+                    text = stringResource(R.string.filters)
+                )
+                Spacer(Modifier.height(12.dp))
                 var reverseCheckedState by remember { mutableStateOf(state.reversedMode) }
                 CheckBox(
                     modifier = Modifier
@@ -291,7 +305,11 @@ fun CosplaysScreen(
                     text = stringResource(R.string.check_box_reversed),
                     onClickListener = {
                         reverseCheckedState = !reverseCheckedState
-                        viewModel.onEvent(CosplaysScreenEvents.ChangeReversedState(reverseCheckedState))
+                        viewModel.onEvent(
+                            CosplaysScreenEvents.ChangeReversedState(
+                                reverseCheckedState
+                            )
+                        )
                     }
                 )
                 Spacer(Modifier.height(12.dp))
@@ -303,7 +321,11 @@ fun CosplaysScreen(
                     text = stringResource(R.string.check_box_show_downloaded),
                     onClickListener = {
                         showDownloadedCheckedState = !showDownloadedCheckedState
-                        viewModel.onEvent(CosplaysScreenEvents.ChangeDownloadedState(showDownloadedCheckedState))
+                        viewModel.onEvent(
+                            CosplaysScreenEvents.ChangeDownloadedState(
+                                showDownloadedCheckedState
+                            )
+                        )
                     }
                 )
                 Box(

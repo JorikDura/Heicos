@@ -36,5 +36,7 @@
     <string name="datetime">Download time: %1$s</string>
     <string name="check_box_reversed">Reversed</string>
     <string name="check_box_show_downloaded">Show downloaded</string>
+    <string name="filters">Filters 🤝</string>
+    <string name="filter_pages">Pages 📃</string>
 
 </resources>

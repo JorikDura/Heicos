@@ -36,5 +36,7 @@
     <string name="datetime">Время загрузки: %1$s</string>
     <string name="check_box_reversed">В обратном порядке</string>
     <string name="check_box_show_downloaded">Показывать скаченные</string>
+    <string name="filters">Фильтры 🤝</string>
+    <string name="filter_pages">Страницы 📃</string>
 
 </resources>
