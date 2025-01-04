@@ -127,7 +127,7 @@ class CosplaysScreenViewModel @Inject constructor(
             }
 
             is CosplaysScreenEvents.ChangeDownloadedState -> {
-                resetValues()
+                resetValues(true)
 
                 _state.value = _state.value.copy(
                     showDownloaded = event.state
