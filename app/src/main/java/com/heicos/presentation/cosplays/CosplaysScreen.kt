@@ -1,5 +1,8 @@
 package com.heicos.presentation.cosplays
 
+import android.content.Intent
+import android.os.Build
+import android.os.Environment
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -30,6 +33,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -82,6 +86,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.heicos.R
@@ -99,6 +104,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -328,6 +334,19 @@ fun CosplaysScreen(
                         )
                     }
                 )
+
+                Button(onClick = {
+                    viewModel.export()
+                }, content = {
+                    Text("EXPORT")
+                })
+
+                Button(onClick = {
+                    viewModel.import()
+                }, content = {
+                    Text("IMPORT")
+                })
+
                 Box(
                     modifier = Modifier
                         .weight(1f)

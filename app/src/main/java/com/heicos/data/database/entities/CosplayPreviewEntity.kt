@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(indices = [Index(value = ["name"], unique = true)])
+@Entity(indices = [Index(value = ["name"], unique = false)])
 data class CosplayPreviewEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.SearchQuery
+import com.heicos.domain.repository.BackupRepository
 import com.heicos.domain.use_case.DeleteAllSearchQueriesUseCase
 import com.heicos.domain.use_case.DeleteSearchQueryByIdUseCase
 import com.heicos.domain.use_case.GetCosplaysLastPageUseCase
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class CosplaysScreenViewModel @Inject constructor(
     private val getCosplaysUseCase: GetCosplaysUseCase,
@@ -27,7 +29,8 @@ class CosplaysScreenViewModel @Inject constructor(
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val upsertSearchQueryUseCase: UpsertSearchQueryUseCase,
     private val deleteSearchQueryByIdUseCase: DeleteSearchQueryByIdUseCase,
-    private val deleteAllSearchQueriesUseCase: DeleteAllSearchQueriesUseCase
+    private val deleteAllSearchQueriesUseCase: DeleteAllSearchQueriesUseCase,
+    private val backupRepository: BackupRepository
 ) : ViewModel() {
 
     private var isSearching = false
@@ -255,6 +258,16 @@ class CosplaysScreenViewModel @Inject constructor(
             isHistoryIsEmpty = true,
             history = emptyList()
         )
+    }
+
+    fun export() {
+        backupRepository.export("CosplayPreviewEntity")
+    }
+
+    fun import() {
+        viewModelScope.launch(Dispatchers.IO) {
+            backupRepository.import("CosplayPreviewEntity")
+        }
     }
 
     companion object {

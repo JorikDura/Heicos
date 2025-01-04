@@ -11,7 +11,7 @@ import com.heicos.data.database.entities.SearchQueryEntity
 
 @Database(
     entities = [SearchQueryEntity::class, CosplayPreviewEntity::class],
-    version = 9,
+    version = 10,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -20,7 +20,8 @@ import com.heicos.data.database.entities.SearchQueryEntity
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8, spec = CosplaysDataBase.Migration7To8::class),
-        AutoMigration(from = 8, to = 9, spec = CosplaysDataBase.Migration8To9::class)
+        AutoMigration(from = 8, to = 9, spec = CosplaysDataBase.Migration8To9::class),
+        AutoMigration(from = 9, to = 10),
 
     ],
     exportSchema = true
@@ -31,6 +32,8 @@ abstract class CosplaysDataBase : RoomDatabase() {
     abstract val searchDao: SearchQueryDao
 
     abstract val cosplayDao: CosplayPreviewDao
+
+    abstract val backupDao: BackupDao
 
     @RenameColumn(
         tableName = "CosplayPreviewEntity",
