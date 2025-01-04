@@ -24,7 +24,8 @@ class CosplayRepositoryImpl @Inject constructor(
     private var lastPage: Int? = null
     override suspend fun getCosplays(
         page: Int,
-        cosplayType: CosplayType
+        cosplayType: CosplayType,
+        showDownloaded: Boolean
     ): Flow<Resource<List<CosplayPreview>>> {
         return flow {
             emit(Resource.Loading(isLoading = true))
@@ -32,7 +33,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 CosplayType.New -> {
                     val url = "${BuildConfig.baseUrl}/search/page/$page/"
                     val result = try {
-                        getCosplaysFromUrl(url)
+                        getCosplaysFromUrl(url, showDownloaded)
                     } catch (e: HttpStatusException) {
                         emit(
                             Resource.Error(
@@ -58,7 +59,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 CosplayType.Ranking -> {
                     val url = "${BuildConfig.baseUrl}/ranking/page/$page/"
                     val result = try {
-                        getCosplaysFromUrl(url)
+                        getCosplaysFromUrl(url, showDownloaded)
                     } catch (e: HttpStatusException) {
                         emit(
                             Resource.Error(
@@ -84,7 +85,7 @@ class CosplayRepositoryImpl @Inject constructor(
                 CosplayType.Recently -> {
                     val url = "${BuildConfig.baseUrl}/recently/page/$page/"
                     val result = try {
-                        getCosplaysFromUrl(url)
+                        getCosplaysFromUrl(url, showDownloaded)
                     } catch (e: HttpStatusException) {
                         emit(
                             Resource.Error(
@@ -111,7 +112,7 @@ class CosplayRepositoryImpl @Inject constructor(
                     val url =
                         "${BuildConfig.baseUrl}/search/keyword/${cosplayType.query}/page/$page/"
                     val result = try {
-                        getCosplaysFromUrl(url)
+                        getCosplaysFromUrl(url, showDownloaded)
                     } catch (e: HttpStatusException) {
                         emit(
                             Resource.Error(
@@ -247,7 +248,10 @@ class CosplayRepositoryImpl @Inject constructor(
         return dataBase.cosplayDao.upsertCosplayPreview(entity)
     }
 
-    private suspend fun getCosplaysFromUrl(url: String): List<CosplayPreview> {
+    private suspend fun getCosplaysFromUrl(
+        url: String,
+        showDownloaded: Boolean
+    ): List<CosplayPreview> {
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
 
@@ -310,12 +314,17 @@ class CosplayRepositoryImpl @Inject constructor(
             val index = result.indexOfFirst {
                 it.title == databaseItem.name
             }
-            with(result[index]) {
-                id = databaseItem.id
-                isDownloaded = databaseItem.downloadedAt != null
-                downloadedAt = databaseItem.downloadedAt
-                downloadTime = databaseItem.downloadedAt?.let { convertTime(it) }
-                isViewed = true
+
+            if (!showDownloaded && databaseItem.downloadedAt != null) {
+                result.removeAt(index)
+            } else {
+                with(result[index]) {
+                    id = databaseItem.id
+                    isDownloaded = databaseItem.downloadedAt != null
+                    downloadedAt = databaseItem.downloadedAt
+                    downloadTime = databaseItem.downloadedAt?.let { convertTime(it) }
+                    isViewed = true
+                }
             }
         }
 

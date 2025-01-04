@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface CosplayRepository {
     suspend fun getCosplays(
         page: Int,
-        cosplayType: CosplayType
+        cosplayType: CosplayType,
+        showDownloaded: Boolean
     ): Flow<Resource<List<CosplayPreview>>>
 
     suspend fun getFullCosplay(url: String): Flow<Resource<List<String>>>

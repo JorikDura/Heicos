@@ -34,5 +34,7 @@
     <string name="share">Поделиться</string>
     <string name="of_pages">из</string>
     <string name="datetime">Время загрузки: %1$s</string>
+    <string name="check_box_reversed">В обратном порядке</string>
+    <string name="check_box_show_downloaded">Показывать скаченные</string>
 
 </resources>

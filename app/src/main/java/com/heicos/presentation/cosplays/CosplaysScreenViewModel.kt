@@ -125,6 +125,16 @@ class CosplaysScreenViewModel @Inject constructor(
             CosplaysScreenEvents.LoadSearchQueries -> {
                 loadSearchQueries()
             }
+
+            is CosplaysScreenEvents.ChangeDownloadedState -> {
+                resetValues()
+
+                _state.value = _state.value.copy(
+                    showDownloaded = event.state
+                )
+
+                loadNextCosplays()
+            }
         }
     }
 
@@ -132,7 +142,8 @@ class CosplaysScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val remoteData = getCosplaysUseCase(
                 page = if (loadingNextData) _state.value.nextPage else _state.value.currentPage,
-                cosplayType = if (isSearching) CosplayType.Search(searchQuery) else _state.value.currentCosplayType
+                cosplayType = if (isSearching) CosplayType.Search(searchQuery) else _state.value.currentCosplayType,
+                showDownloaded = _state.value.showDownloaded
             )
 
             remoteData.collect { result ->

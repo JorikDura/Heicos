@@ -11,8 +11,12 @@ class GetCosplaysUseCase @Inject constructor(
     private val repository: CosplayRepository
 ) {
 
-    suspend operator fun invoke(page: Int = 1, cosplayType: CosplayType): Flow<Resource<List<CosplayPreview>>> {
-        return repository.getCosplays(page, cosplayType)
+    suspend operator fun invoke(
+        page: Int = 1,
+        cosplayType: CosplayType,
+        showDownloaded: Boolean
+    ): Flow<Resource<List<CosplayPreview>>> {
+        return repository.getCosplays(page, cosplayType, showDownloaded)
     }
 
 }

@@ -283,14 +283,27 @@ fun CosplaysScreen(
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                var checkedState by remember { mutableStateOf(state.reversedMode) }
+                var reverseCheckedState by remember { mutableStateOf(state.reversedMode) }
                 CheckBox(
                     modifier = Modifier
                         .padding(horizontal = 12.dp),
-                    checkedState = checkedState,
+                    checkedState = reverseCheckedState,
+                    text = stringResource(R.string.check_box_reversed),
                     onClickListener = {
-                        checkedState = !checkedState
-                        viewModel.onEvent(CosplaysScreenEvents.ChangeReversedState(checkedState))
+                        reverseCheckedState = !reverseCheckedState
+                        viewModel.onEvent(CosplaysScreenEvents.ChangeReversedState(reverseCheckedState))
+                    }
+                )
+                Spacer(Modifier.height(12.dp))
+                var showDownloadedCheckedState by remember { mutableStateOf(state.showDownloaded) }
+                CheckBox(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp),
+                    checkedState = showDownloadedCheckedState,
+                    text = stringResource(R.string.check_box_show_downloaded),
+                    onClickListener = {
+                        showDownloadedCheckedState = !showDownloadedCheckedState
+                        viewModel.onEvent(CosplaysScreenEvents.ChangeDownloadedState(showDownloadedCheckedState))
                     }
                 )
                 Box(
@@ -560,6 +573,7 @@ fun CosplaysScreen(
 fun CheckBox(
     modifier: Modifier = Modifier,
     checkedState: Boolean,
+    text: String,
     onClickListener: () -> Unit
 ) {
     Crossfade(targetState = checkedState, label = "checkbox_animation") { checked ->
@@ -580,7 +594,7 @@ fun CheckBox(
                 onCheckedChange = null
             )
             Text(
-                text = "Reversed",
+                text = text,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(start = 16.dp)
             )

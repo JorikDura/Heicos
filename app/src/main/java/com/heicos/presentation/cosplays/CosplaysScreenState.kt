@@ -20,5 +20,6 @@ data class CosplaysScreenState(
     val history: List<SearchQuery> = emptyList(),
     val message: String? = null,
     val nextDataMessage: String? = null,
-    val reversedMode: Boolean = false
+    val reversedMode: Boolean = false,
+    val showDownloaded: Boolean = true
 )
