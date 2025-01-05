@@ -7,5 +7,5 @@ import androidx.sqlite.db.SupportSQLiteQuery
 @Dao
 interface BackupDao {
     @RawQuery
-    fun insertDataRawFormat(query: SupportSQLiteQuery): Boolean?
+    fun rawQuery(query: SupportSQLiteQuery): Boolean?
 }

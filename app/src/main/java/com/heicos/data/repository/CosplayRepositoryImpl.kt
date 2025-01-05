@@ -2,6 +2,7 @@ package com.heicos.data.repository
 
 import com.heicos.BuildConfig
 import com.heicos.data.database.CosplaysDataBase
+import com.heicos.data.mapper.toCosplayPreview
 import com.heicos.data.mapper.toCosplayPreviewEntity
 import com.heicos.data.mapper.toSearchQuery
 import com.heicos.data.mapper.toSearchQueryEntity
@@ -238,14 +239,29 @@ class CosplayRepositoryImpl @Inject constructor(
         dataBase.searchDao.deleteAllSearchQueries()
     }
 
-    override suspend fun upsertCosplayPreview(
-        cosplayPreview: CosplayPreview,
+    override suspend fun findCosplayPreview(url: String): CosplayPreview? {
+        val cosplay = dataBase.cosplayDao.findCosplay(url)
+
+        return cosplay?.toCosplayPreview()
+    }
+
+    override suspend fun insertCosplayPreview(
+        cosplay: CosplayPreview,
+        time: Long?
+    ): Long {
+        val cosplayEntity = cosplay.toCosplayPreviewEntity(time, false)
+
+        return dataBase.cosplayDao.insertCosplayPreview(cosplayEntity)
+    }
+
+    override suspend fun updateCosplayPreview(
+        cosplay: CosplayPreview,
         time: Long?,
         isDownloaded: Boolean
-    ): Long {
-        val entity = cosplayPreview.toCosplayPreviewEntity(time, isDownloaded)
+    ) {
+        val cosplayEntity = cosplay.toCosplayPreviewEntity(time, isDownloaded)
 
-        return dataBase.cosplayDao.upsertCosplayPreview(entity)
+        return dataBase.cosplayDao.updateCosplayPreview(cosplayEntity)
     }
 
     private suspend fun getCosplaysFromUrl(
@@ -308,11 +324,11 @@ class CosplayRepositoryImpl @Inject constructor(
             )
         }
 
-        val cosplaysDataBase = dataBase.cosplayDao.getCosplayPreviews(result.map { it.title })
+        val cosplaysDataBase = dataBase.cosplayDao.getCosplayPreviews(result.map { it.pageUrl })
 
         cosplaysDataBase.forEach { databaseItem ->
             val index = result.indexOfFirst {
-                it.title == databaseItem.name
+                it.pageUrl == databaseItem.url
             }
 
             if (!showDownloaded && databaseItem.downloadedAt != null) {

@@ -38,5 +38,15 @@
     <string name="check_box_show_downloaded">Показывать скаченные</string>
     <string name="filters">Фильтры 🤝</string>
     <string name="filter_pages">Страницы 📃</string>
+    <string name="settings">Настройки</string>
+    <string name="external_storage_permission">Перед использованием бекап-настроек, необходимо выдать приложению разрешение на работу с файлами.</string>
+    <string name="okay">Окей 😊</string>
+    <string name="backup_settings">Резервное копирование</string>
+    <string name="view_download_history">История просмотров/скачиваний</string>
+    <string name="backup">Бекап</string>
+    <string name="restore">Импорт</string>
+    <string name="search_history_backup">История поиска</string>
+    <string name="success">Успешно</string>
+    <string name="truncate">Очистка данных</string>
 
 </resources>

@@ -260,16 +260,6 @@ class CosplaysScreenViewModel @Inject constructor(
         )
     }
 
-    fun export() {
-        backupRepository.export("CosplayPreviewEntity")
-    }
-
-    fun import() {
-        viewModelScope.launch(Dispatchers.IO) {
-            backupRepository.import("CosplayPreviewEntity")
-        }
-    }
-
     companion object {
         const val DEFAULT_PAGE = 1
     }

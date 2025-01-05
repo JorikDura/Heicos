@@ -1,8 +1,5 @@
 package com.heicos.presentation.cosplays
 
-import android.content.Intent
-import android.os.Build
-import android.os.Environment
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -33,7 +30,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -86,14 +82,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.heicos.R
 import com.heicos.domain.util.CosplayType
 import com.heicos.presentation.cosplays.types.CosplayTypes
-import com.heicos.presentation.destinations.AboutScreenDestination
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
+import com.heicos.presentation.destinations.SettingsScreenDestination
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.SwipeToDeleteContainer
@@ -335,18 +330,6 @@ fun CosplaysScreen(
                     }
                 )
 
-                Button(onClick = {
-                    viewModel.export()
-                }, content = {
-                    Text("EXPORT")
-                })
-
-                Button(onClick = {
-                    viewModel.import()
-                }, content = {
-                    Text("IMPORT")
-                })
-
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -355,7 +338,7 @@ fun CosplaysScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter),
                         onClick = {
-                            navigator.navigate(AboutScreenDestination)
+                            navigator.navigate(SettingsScreenDestination)
                         }
                     ) {
                         Row(
@@ -363,7 +346,7 @@ fun CosplaysScreen(
                         ) {
                             Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = stringResource(id = R.string.about))
+                            Text(text = stringResource(id = R.string.settings))
                         }
                     }
                 }

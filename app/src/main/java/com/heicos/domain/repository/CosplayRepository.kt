@@ -20,9 +20,16 @@ interface CosplayRepository {
     suspend fun upsertSearchQuery(searchItem: SearchQuery)
     suspend fun deleteSearchQueryById(searchItem: SearchQuery)
     suspend fun deleteAllSearchQueries()
-    suspend fun upsertCosplayPreview(
-        cosplayPreview: CosplayPreview,
+
+    suspend fun findCosplayPreview(url: String): CosplayPreview?
+    suspend fun insertCosplayPreview(
+        cosplay: CosplayPreview,
+        time: Long?
+    ): Long
+
+    suspend fun updateCosplayPreview(
+        cosplay: CosplayPreview,
         time: Long?,
         isDownloaded: Boolean
-    ): Long
+    )
 }

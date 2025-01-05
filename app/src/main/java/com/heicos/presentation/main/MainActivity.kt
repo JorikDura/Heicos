@@ -41,24 +41,6 @@ class MainActivity : ComponentActivity() {
                 val statusBarColor = MaterialTheme.colorScheme.surface
                 val isDarkTheme = isSystemInDarkTheme()
 
-                if (Build.VERSION.SDK_INT >= 30) {
-                    if (!Environment.isExternalStorageManager()) {
-                        val getpermission = Intent()
-                        getpermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                        startActivity(getpermission)
-                    }
-                }
-
-                /*if (Build.VERSION.SDK_INT >= 30) {
-                    if (!Environment.isExternalStorageManager()) {
-                        Intent().apply {
-                            action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                        }.also {
-                            startActivity(it)
-                        }
-                    }
-                }*/
-
                 SideEffect {
                     systemUIController.setNavigationBarColor(
                         color = Color.Transparent,

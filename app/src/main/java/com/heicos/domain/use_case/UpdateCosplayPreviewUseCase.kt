@@ -4,16 +4,16 @@ import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.repository.CosplayRepository
 import javax.inject.Inject
 
-class UpsertCosplayPreviewUseCase @Inject constructor(
+class UpdateCosplayPreviewUseCase @Inject constructor(
     private val repository: CosplayRepository
 ) {
 
     suspend operator fun invoke(
         cosplayPreview: CosplayPreview,
-        time: Long?,
+        time: Long,
         isDownloaded: Boolean = false
-    ): Long {
-        return repository.upsertCosplayPreview(cosplayPreview, time, isDownloaded)
+    ) {
+        return repository.updateCosplayPreview(cosplayPreview, time, isDownloaded)
     }
 
 }

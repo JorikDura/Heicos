@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.BuildConfig
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.use_case.FindCosplayPreviewUseCase
 import com.heicos.domain.use_case.GetCosplayTagsUseCase
 import com.heicos.domain.use_case.GetFullCosplayUseCase
-import com.heicos.domain.use_case.UpsertCosplayPreviewUseCase
+import com.heicos.domain.use_case.InsertCosplayPreviewUseCase
+import com.heicos.domain.use_case.UpdateCosplayPreviewUseCase
 import com.heicos.utils.Resource
 import com.heicos.utils.manager.CosplayDownloader
 import com.heicos.utils.time.convertTime
@@ -24,7 +26,9 @@ import javax.inject.Inject
 class FullCosplayScreenViewModel @Inject constructor(
     private val getFullCosplayUseCase: GetFullCosplayUseCase,
     private val getCosplayTagsUseCase: GetCosplayTagsUseCase,
-    private val upsertCosplayPreviewUseCase: UpsertCosplayPreviewUseCase,
+    private val findCosplayPreviewUseCase: FindCosplayPreviewUseCase,
+    private val insertCosplayPreviewUseCase: InsertCosplayPreviewUseCase,
+    private val updateCosplayPreviewUseCase: UpdateCosplayPreviewUseCase,
     private val cosplayDownloader: CosplayDownloader,
     private val savedState: SavedStateHandle
 ) : ViewModel() {
@@ -56,16 +60,29 @@ class FullCosplayScreenViewModel @Inject constructor(
             )
         }
 
-        loadCosplays()
-
         viewModelScope.launch {
-            val id = upsertCosplayPreviewUseCase(
-                cosplayPreview = cosplayPreview,
-                time = System.currentTimeMillis()
-            )
+            val preview = findCosplayPreviewUseCase(cosplayPreview.pageUrl)
 
-            cosplayPreview.id = id
+            cosplayPreview.id = preview?.id ?: 0
+            preview?.downloadedAt?.let {
+                cosplayPreview.downloadedAt = it
+            }
+
+            if (cosplayPreview.id == 0.toLong()) {
+                val id = insertCosplayPreviewUseCase(
+                    cosplayPreview = cosplayPreview,
+                    time = System.currentTimeMillis()
+                )
+                cosplayPreview.id = id
+            } else {
+                updateCosplayPreviewUseCase(
+                    cosplayPreview = cosplayPreview,
+                    time = System.currentTimeMillis()
+                )
+            }
         }
+
+        loadCosplays()
     }
 
     private fun loadCosplays() {
@@ -107,7 +124,7 @@ class FullCosplayScreenViewModel @Inject constructor(
                 downloadAllImages()
                 val time = System.currentTimeMillis()
                 viewModelScope.launch {
-                    upsertCosplayPreviewUseCase(
+                    updateCosplayPreviewUseCase(
                         cosplayPreview = cosplayPreview,
                         time = time,
                         isDownloaded = true
@@ -125,7 +142,7 @@ class FullCosplayScreenViewModel @Inject constructor(
                 downloadImage(event.url)
                 val time = System.currentTimeMillis()
                 viewModelScope.launch {
-                    upsertCosplayPreviewUseCase(
+                    updateCosplayPreviewUseCase(
                         cosplayPreview = cosplayPreview,
                         time = time,
                         isDownloaded = true
