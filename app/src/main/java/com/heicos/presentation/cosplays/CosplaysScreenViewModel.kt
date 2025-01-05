@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.domain.model.SearchQuery
-import com.heicos.domain.repository.BackupRepository
 import com.heicos.domain.use_case.DeleteAllSearchQueriesUseCase
 import com.heicos.domain.use_case.DeleteSearchQueryByIdUseCase
 import com.heicos.domain.use_case.GetCosplaysLastPageUseCase
