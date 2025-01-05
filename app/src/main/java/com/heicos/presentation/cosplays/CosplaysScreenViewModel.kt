@@ -29,8 +29,7 @@ class CosplaysScreenViewModel @Inject constructor(
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val upsertSearchQueryUseCase: UpsertSearchQueryUseCase,
     private val deleteSearchQueryByIdUseCase: DeleteSearchQueryByIdUseCase,
-    private val deleteAllSearchQueriesUseCase: DeleteAllSearchQueriesUseCase,
-    private val backupRepository: BackupRepository
+    private val deleteAllSearchQueriesUseCase: DeleteAllSearchQueriesUseCase
 ) : ViewModel() {
 
     private var isSearching = false
