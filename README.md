@@ -8,7 +8,9 @@ Features:
 * Image slider
 * Ability to download/download all images
 * Search with history
-* Show icon if pack is already downloaded 
+* Show icons if pack is already viewed/downloaded
+* View history
+* Backup data
 
 Minimum android version - <b>8.1 (sdk 27)</b>
 
@@ -28,7 +30,9 @@ That's all.
 * Слайдер картинок
 * Возможность скачать/скачать все
 * Поиск с историей
-* Отоброжение иконки, если пак уже был скачен
+* Отоброжение иконок, если пак уже был просмотрен/скачен
+* История просмотров
+* Бекап данных
 
 
 Минимальная версия андроид - <b>8.1 (sdk 27)</b>
