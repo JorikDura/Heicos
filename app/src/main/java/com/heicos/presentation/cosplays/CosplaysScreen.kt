@@ -36,8 +36,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissibleDrawerSheet
@@ -344,7 +344,7 @@ fun CosplaysScreen(
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
+                            Icon(imageVector = Icons.Outlined.Settings, contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(text = stringResource(id = R.string.settings))
                         }

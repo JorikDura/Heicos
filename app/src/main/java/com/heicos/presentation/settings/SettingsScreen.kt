@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -32,12 +33,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +52,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
@@ -64,37 +63,15 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
 
     if (Build.VERSION.SDK_INT >= 30) {
         if (!Environment.isExternalStorageManager()) {
-            var openDialog by remember {
+            val managerDialog = remember {
                 mutableStateOf(true)
             }
 
-            if (openDialog) {
-                BasicAlertDialog(
-                    onDismissRequest = {
-                        openDialog = false
-                    }
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        shape = MaterialTheme.shapes.large,
-                        tonalElevation = AlertDialogDefaults.TonalElevation
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = stringResource(R.string.external_storage_permission),
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            TextButton(
-                                onClick = { openDialog = false },
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text(stringResource(R.string.okay))
-                            }
-                        }
-                    }
-                }
+            if (managerDialog.value) {
+                InfoDialog(
+                    isOpen = managerDialog,
+                    text = stringResource(R.string.external_storage_permission)
+                )
             } else {
                 Intent().apply {
                     action = android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
@@ -129,10 +106,38 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 }
             }
 
-            Text(
-                text = stringResource(R.string.backup_settings),
-                fontSize = 24.sp
-            )
+            val infoDialog = remember {
+                mutableStateOf(false)
+            }
+
+            if (infoDialog.value) {
+                InfoDialog(
+                    isOpen = infoDialog,
+                    text = stringResource(R.string.backup_info)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.backup_settings),
+                    fontSize = 24.sp
+                )
+                IconButton(
+                    onClick = {
+                        infoDialog.value = true
+                    },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = null
+                        )
+                    })
+            }
 
             Spacer(Modifier.height(12.dp))
 
@@ -195,7 +200,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 onClick = {
                     viewModel.onEvent(SettingsScreenEvents.Truncate(BackupTypes.ViewAndDownload))
                 }, content = {
-                    Text(text = "Clear")
+                    Text(text = stringResource(R.string.clear))
                 })
 
             Spacer(Modifier.height(12.dp))
@@ -210,7 +215,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 onClick = {
                     viewModel.onEvent(SettingsScreenEvents.Truncate(BackupTypes.Search))
                 }, content = {
-                    Text(text = "Clear")
+                    Text(text = stringResource(R.string.clear))
                 })
 
             Spacer(Modifier.height(12.dp))
@@ -239,6 +244,40 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
     }
 
 
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun InfoDialog(
+    isOpen: MutableState<Boolean>,
+    text: String
+) {
+    BasicAlertDialog(
+        onDismissRequest = {
+            isOpen.value = false
+        }
+    ) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = AlertDialogDefaults.TonalElevation
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = text,
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                TextButton(
+                    onClick = { isOpen.value = false },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(stringResource(R.string.okay))
+                }
+            }
+        }
+    }
 }
 
 @Composable
