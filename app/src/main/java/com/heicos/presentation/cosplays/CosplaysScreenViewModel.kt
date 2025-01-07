@@ -205,6 +205,8 @@ class CosplaysScreenViewModel @Inject constructor(
         }
 
         _state.value = _state.value.copy(
+            currentPage = DEFAULT_PAGE,
+            nextPage = DEFAULT_PAGE + 1,
             isLoading = true,
             isEmpty = false,
             nextDataIsEmpty = false,
