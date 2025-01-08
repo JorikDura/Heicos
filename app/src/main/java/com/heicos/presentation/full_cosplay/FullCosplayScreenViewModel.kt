@@ -52,7 +52,7 @@ class FullCosplayScreenViewModel @Inject constructor(
             cosplayPreview =
                 CosplayPreview(
                     title = cosplayName,
-                    pageUrl = "${BuildConfig.baseUrl}/image/${cosplayName}",
+                    pageUrl = "${BuildConfig.baseUrl}/image/${cosplayName}/",
                     storyPageUrl = "/story/${cosplayName}/"
                 )
             _state.value = _state.value.copy(
