@@ -88,6 +88,7 @@ import com.heicos.R
 import com.heicos.domain.util.CosplayType
 import com.heicos.presentation.cosplays.types.CosplayTypes
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
+import com.heicos.presentation.destinations.FullVideoCosplayDestination
 import com.heicos.presentation.destinations.SettingsScreenDestination
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
@@ -507,11 +508,19 @@ fun CosplaysScreen(
                                 cosplay = cosplay,
                                 navController = navController,
                                 onItemClickListener = {
-                                    navigator.navigate(
-                                        FullCosplayScreenDestination(
-                                            cosplayPreview = cosplay
+                                    if (state.currentCosplayType is CosplayType.NewVideo) {
+                                        navigator.navigate(
+                                            FullVideoCosplayDestination(
+                                                cosplayPreview = cosplay
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        navigator.navigate(
+                                            FullCosplayScreenDestination(
+                                                cosplayPreview = cosplay
+                                            )
+                                        )
+                                    }
                                 }
                             )
                         }

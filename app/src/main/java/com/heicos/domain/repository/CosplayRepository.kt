@@ -32,4 +32,6 @@ interface CosplayRepository {
         time: Long?,
         isDownloaded: Boolean
     )
+
+    suspend fun getFullVideoCosplay(url: String): String
 }

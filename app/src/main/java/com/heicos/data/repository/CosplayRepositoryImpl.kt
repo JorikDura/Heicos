@@ -156,6 +156,32 @@ class CosplayRepositoryImpl @Inject constructor(
 
                     emit(Resource.Success(data = result))
                 }
+
+                CosplayType.NewVideo -> {
+                    val url = "${BuildConfig.baseUrl}/search-video/page/$page/"
+                    val result = try {
+                        getCosplaysFromUrl(url, showDownloaded)
+                    } catch (e: HttpStatusException) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    } catch (e: Exception) {
+                        emit(
+                            Resource.Error(
+                                message = e.message ?: ERROR_MESSAGE,
+                                data = emptyList()
+                            )
+                        )
+                        null
+                    }
+                    result?.let {
+                        emit(Resource.Success(data = result))
+                    }
+                }
             }
             emit(Resource.Loading(isLoading = false))
         }
@@ -187,6 +213,15 @@ class CosplayRepositoryImpl @Inject constructor(
             }
             emit(Resource.Loading(isLoading = false))
         }
+    }
+
+    override suspend fun getFullVideoCosplay(url: String): String {
+        val doc = Jsoup.connect(url).get()
+
+        val video = doc.select("video#video_1")
+        val url = video.select("source").attr("src")
+
+        return url
     }
 
     override suspend fun getCosplayTags(url: String): Flow<Resource<List<String>>> {

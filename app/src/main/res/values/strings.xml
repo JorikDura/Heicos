@@ -50,5 +50,6 @@
     <string name="truncate">Clear data</string>
     <string name="clear">Clear</string>
     <string name="backup_info">Any file will be located in \'HeicosBackup\' folder. Restore on cosplays not ideal. This should work at least from app version v1.9.3</string>
+    <string name="new_video">New video</string>
 
 </resources>

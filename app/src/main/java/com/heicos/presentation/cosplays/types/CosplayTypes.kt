@@ -6,10 +6,12 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material.icons.twotone.ThumbUp
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.heicos.R
 import com.heicos.domain.util.CosplayType
@@ -43,5 +45,11 @@ enum class CosplayTypes(
         selectedIcon = Icons.TwoTone.Info,
         icon = Icons.Outlined.Info,
         cosplayType = CosplayType.RecentlyViewed
+    ),
+    NewVideo(
+        title = R.string.new_video,
+        selectedIcon = Icons.TwoTone.ThumbUp,
+        icon = Icons.Outlined.ThumbUp,
+        cosplayType = CosplayType.NewVideo
     )
 }
