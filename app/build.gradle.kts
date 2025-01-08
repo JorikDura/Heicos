@@ -71,30 +71,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            resources.pickFirsts.add("lib/x86/libswscale.so")
-            resources.pickFirsts.add("lib/x86/libavcodec.so")
-            resources.pickFirsts.add("lib/x86_64/libavutil.so")
-            resources.pickFirsts.add("lib/armeabi-v7a/libswscale_neon.so")
-            resources.pickFirsts.add("lib/x86_64/libavcodec.so")
-            resources.pickFirsts.add("lib/x86_64/libswscale.so")
-            resources.pickFirsts.add("lib/x86_64/libavformat.so")
-            resources.pickFirsts.add("lib/x86/libavfilter.so")
-            resources.pickFirsts.add("lib/x86/libswresample.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libavcodec.so")
-            resources.pickFirsts.add("lib/armeabi-v7a/libavfilter_neon.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libavformat.so")
-            resources.pickFirsts.add("lib/x86/libavformat.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libavutil.so")
-            resources.pickFirsts.add("lib/x86_64/libavdevice.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libavfilter.so")
-            resources.pickFirsts.add("lib/x86_64/libswresample.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libswscale.so")
-            resources.pickFirsts.add("lib/x86/libavdevice.so")
-            resources.pickFirsts.add("lib/x86/libavutil.so")
-            resources.pickFirsts.add("lib/armeabi-v7a/libavcodec_neon.so")
-            resources.pickFirsts.add("lib/x86_64/libavfilter.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libswresample.so")
-            resources.pickFirsts.add("lib/arm64-v8a/libavdevice.so")
+
         }
     }
     buildTypes {
@@ -166,7 +143,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
-    implementation("com.arthenica:ffmpeg-kit-full:4.5.1-1")
+    implementation("com.arthenica:ffmpeg-kit-https:6.0-2")
     //foundation
     //implementation("androidx.compose.foundation:foundation:1.6.2")
 }
