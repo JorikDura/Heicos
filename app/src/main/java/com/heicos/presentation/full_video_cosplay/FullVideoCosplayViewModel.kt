@@ -34,7 +34,6 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
 @Inject constructor(
     private val getFullVideoCosplayUseCase: GetFullVideoCosplayUseCase,
     private val savedState: SavedStateHandle,
-    private val context: Context,
     val player: ExoPlayer
 ) : ViewModel() {
 

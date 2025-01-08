@@ -2,7 +2,6 @@ package com.heicos.di
 
 import android.app.Application
 import android.content.Context
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
 import com.heicos.data.database.CosplaysDataBase
