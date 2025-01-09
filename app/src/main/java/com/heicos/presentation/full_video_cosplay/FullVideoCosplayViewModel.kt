@@ -129,7 +129,9 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
             exportDir.mkdirs()
         }
 
-        val file = File(exportDir, _state.value.cosplayPreview.title + ".mp4")
+        val title = _state.value.cosplayPreview.title.replace("/", "")
+
+        val file = File(exportDir, "$title.mp4")
 
         val command = String.format(COMMAND, _state.value.videoUrl, file)
 
