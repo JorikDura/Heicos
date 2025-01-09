@@ -188,7 +188,7 @@ fun CosplaysScreen(
                 Text(
                     modifier = Modifier
                         .padding(all = 12.dp),
-                    text = "Image packs 🙂"
+                    text = stringResource(R.string.image_packs)
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
@@ -209,7 +209,7 @@ fun CosplaysScreen(
                 Text(
                     modifier = Modifier
                         .padding(all = 12.dp),
-                    text = "Video packs 🤔"
+                    text = stringResource(R.string.video_packs)
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
@@ -230,7 +230,7 @@ fun CosplaysScreen(
                 Text(
                     modifier = Modifier
                         .padding(all = 12.dp),
-                    text = "Asian packs 😌"
+                    text = stringResource(R.string.asian_packs)
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
@@ -251,7 +251,7 @@ fun CosplaysScreen(
                 Text(
                     modifier = Modifier
                         .padding(all = 12.dp),
-                    text = "History 🥱"
+                    text = stringResource(R.string.history)
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(all = 12.dp))

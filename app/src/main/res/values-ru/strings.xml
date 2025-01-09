@@ -52,6 +52,9 @@
     <string name="truncate">Очистка данных</string>
     <string name="clear">Очистить</string>
     <string name="backup_info">Любой файл будет расположен в папке\'HeicosBackup\'. Восстановление косплеев не идеально и работает только для данных с версии v1.9.3.</string>
-
+    <string name="image_packs">Паки картинок 🙂</string>
+    <string name="video_packs">Видео паки 🤔</string>
+    <string name="asian_packs">Азиатские паки 😌</string>
+    <string name="history">История 🥱</string>
 
 </resources>

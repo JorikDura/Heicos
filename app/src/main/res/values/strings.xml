@@ -52,5 +52,9 @@
     <string name="truncate">Clear data</string>
     <string name="clear">Clear</string>
     <string name="backup_info">Any file will be located in \'HeicosBackup\' folder. Restore on cosplays not ideal. This should work at least from app version v1.9.3</string>
+    <string name="image_packs">Image packs 🙂</string>
+    <string name="video_packs">Video packs 🤔</string>
+    <string name="asian_packs">Asian packs 😌</string>
+    <string name="history">History 🥱</string>
 
 </resources>
