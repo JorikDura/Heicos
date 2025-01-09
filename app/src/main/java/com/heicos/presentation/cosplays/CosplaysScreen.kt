@@ -160,6 +160,17 @@ fun CosplaysScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val focusManager = LocalFocusManager.current
 
+    val imageCosplays = listOf(
+        CosplayTypes.New,
+        CosplayTypes.Ranking,
+        CosplayTypes.Recently
+    )
+
+    val videoCosplays = listOf(
+        CosplayTypes.NewVideo,
+        CosplayTypes.RankingVideo
+    )
+
     DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -168,36 +179,67 @@ fun CosplaysScreen(
                     .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
             ) {
-                Spacer(Modifier.height(12.dp))
-                CosplayTypes.entries.forEach { cosplay ->
-                    val selected = cosplay.cosplayType == state.currentCosplayType
-                    NavigationDrawerItem(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) {
-                                    cosplay.selectedIcon
-                                } else {
-                                    cosplay.icon
-                                },
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text(text = stringResource(id = cosplay.title)) },
-                        selected = selected,
-                        onClick = {
-                            if (state.currentCosplayType != cosplay.cosplayType) {
-                                page = 1
-                                scope.launch { drawerState.close() }
-                                query = ""
-                                viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(cosplay.cosplayType))
-                            }
-                        },
-                    )
+                Text(
+                    modifier = Modifier
+                        .padding(all = 12.dp),
+                    text = "Image packs 🙂"
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                imageCosplays.forEach { cosplay ->
+                    NavigationItem(cosplay, state) {
+                        if (state.currentCosplayType != cosplay.cosplayType) {
+                            page = 1
+                            scope.launch { drawerState.close() }
+                            query = ""
+                            viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(cosplay.cosplayType))
+                        }
+                    }
                 }
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
-                Spacer(Modifier.height(12.dp))
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                Text(
+                    modifier = Modifier
+                        .padding(all = 12.dp),
+                    text = "Video packs 🤔"
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                videoCosplays.forEach { cosplay ->
+                    NavigationItem(cosplay, state) {
+                        if (state.currentCosplayType != cosplay.cosplayType) {
+                            page = 1
+                            scope.launch { drawerState.close() }
+                            query = ""
+                            viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(cosplay.cosplayType))
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                Text(
+                    modifier = Modifier
+                        .padding(all = 12.dp),
+                    text = "History 🥱"
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                NavigationItem(CosplayTypes.RecentlyViewed, state) {
+                    if (state.currentCosplayType != CosplayTypes.RecentlyViewed.cosplayType) {
+                        page = 1
+                        scope.launch { drawerState.close() }
+                        query = ""
+                        viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(CosplayTypes.RecentlyViewed.cosplayType))
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
                 Text(
                     modifier = Modifier
                         .padding(start = 12.dp),
@@ -291,9 +333,9 @@ fun CosplaysScreen(
                         Text(text = stringResource(id = R.string.apply))
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
-                Spacer(Modifier.height(12.dp))
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
                 Text(
                     modifier = Modifier
                         .padding(start = 12.dp),
@@ -332,9 +374,10 @@ fun CosplaysScreen(
                     }
                 )
 
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
                 Box(
                     modifier = Modifier
-                        .weight(1f)
                 ) {
                     TextButton(
                         modifier = Modifier
@@ -601,6 +644,33 @@ fun CosplaysScreen(
 
         context.getActivity()?.finish()
     }
+}
+
+@Composable
+private fun NavigationItem(
+    cosplay: CosplayTypes,
+    state: CosplaysScreenState,
+    onClickListener: () -> Unit
+) {
+    val selected = cosplay.cosplayType == state.currentCosplayType
+    NavigationDrawerItem(
+        modifier = Modifier.padding(horizontal = 12.dp),
+        icon = {
+            Icon(
+                imageVector = if (selected) {
+                    cosplay.selectedIcon
+                } else {
+                    cosplay.icon
+                },
+                contentDescription = null
+            )
+        },
+        label = { Text(text = stringResource(id = cosplay.title)) },
+        selected = selected,
+        onClick = {
+            onClickListener()
+        },
+    )
 }
 
 @Composable
