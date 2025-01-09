@@ -12,7 +12,7 @@ class CosplayDownloaderImpl @Inject constructor(
 ) : CosplayDownloader {
 
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
-    override suspend fun downloadFile(url: String, name: String): Long {
+    override suspend fun downloadFile(url: String, name: String) {
         val fileType = url.reversed().substringBefore("/").reversed()
         val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
         var fileName = if (name.isNotEmpty()) {
@@ -42,6 +42,10 @@ class CosplayDownloaderImpl @Inject constructor(
             .setTitle(fileName)
             .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Heicos/$fileName")
 
-        return downloadManager.enqueue(request)
+        downloadManager.enqueue(request)
+    }
+
+    override suspend fun downloadFiles(urls: List<String>, name: String) {
+        TODO("Not yet implemented")
     }
 }

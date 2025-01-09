@@ -14,7 +14,43 @@ class KetchDownloaderImpl @Inject constructor(
     private val ketch: Ketch,
     private val context: Context
 ) : CosplayDownloader {
-    override suspend fun downloadFile(url: String, name: String): Long {
+    override suspend fun downloadFile(url: String, name: String) {
+        val fileName = formatName(url, name)
+
+        val downloadId = ketch.download(
+            url = url,
+            fileName = fileName,
+            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Heicos/",
+            tag = "Image",
+            headers = hashMapOf(
+                Pair("User-Agent", USER_AGENT_MOZILLA)
+            )
+        )
+
+        observeDownload(downloadId)
+    }
+
+    override suspend fun downloadFiles(urls: List<String>, name: String) {
+        var lastDownloadId = 0
+
+        urls.forEach { url ->
+            val fileName = formatName(url, name)
+
+            lastDownloadId = ketch.download(
+                url = url,
+                fileName = fileName,
+                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Heicos/",
+                tag = "Image",
+                headers = hashMapOf(
+                    Pair("User-Agent", USER_AGENT_MOZILLA)
+                )
+            )
+        }
+
+        observeDownload(lastDownloadId)
+    }
+
+    private fun formatName(url: String, name: String = ""): String {
         val fileType = url.reversed().substringBefore("/").reversed()
         val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
         var fileName = if (name.isNotEmpty()) {
@@ -38,17 +74,11 @@ class KetchDownloaderImpl @Inject constructor(
             newValue = "_"
         )
 
-        val download = ketch.download(
-            url = url,
-            fileName = fileName,
-            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Heicos/",
-            tag = "Image",
-            headers = hashMapOf(
-                Pair("User-Agent", USER_AGENT_MOZILLA)
-            )
-        )
+        return fileName
+    }
 
-        ketch.observeDownloadById(download)
+    private suspend fun observeDownload(downloadId: Int) {
+        ketch.observeDownloadById(downloadId)
             .flowOn(Dispatchers.IO)
             .collect { downloadedModel ->
                 when (downloadedModel.status) {
@@ -64,7 +94,5 @@ class KetchDownloaderImpl @Inject constructor(
                     else -> Unit
                 }
             }
-
-        return 0
     }
 }

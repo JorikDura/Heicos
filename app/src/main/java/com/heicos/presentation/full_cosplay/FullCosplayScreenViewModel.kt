@@ -166,9 +166,7 @@ class FullCosplayScreenViewModel @Inject constructor(
     private fun downloadAllImages() {
         viewModelScope.launch(Dispatchers.IO) {
             val cosplayTitle = cosplayPreview.title
-            _state.value.cosplaysPhotoUrl.forEach { imageUrl ->
-                cosplayDownloader.downloadFile(imageUrl, cosplayTitle)
-            }
+            cosplayDownloader.downloadFiles(_state.value.cosplaysPhotoUrl, cosplayTitle)
         }
     }
 
