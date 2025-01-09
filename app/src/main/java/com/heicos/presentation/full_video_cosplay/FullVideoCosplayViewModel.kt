@@ -131,6 +131,15 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
         val command = String.format(COMMAND, _state.value.videoUrl, file)
 
         viewModelScope.launch(Dispatchers.IO) {
+            cosplayPreview.isDownloaded = true
+            val time = System.currentTimeMillis()
+            viewModelScope.launch {
+                updateCosplayPreviewUseCase(
+                    cosplayPreview = cosplayPreview,
+                    time = time,
+                    isDownloaded = true
+                )
+            }
             val mpeg = FFmpegKit.execute(command)
             when (mpeg.state) {
                 SessionState.FAILED -> {
@@ -147,15 +156,6 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
                         it.copy(
                             isDownloadedSuccessful = true,
                             isError = false
-                        )
-                    }
-                    cosplayPreview.isDownloaded = true
-                    val time = System.currentTimeMillis()
-                    viewModelScope.launch {
-                        updateCosplayPreviewUseCase(
-                            cosplayPreview = cosplayPreview,
-                            time = time,
-                            isDownloaded = true
                         )
                     }
                 }

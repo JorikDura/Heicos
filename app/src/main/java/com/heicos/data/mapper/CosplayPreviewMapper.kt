@@ -32,7 +32,7 @@ fun CosplayPreviewEntity.toCosplayPreview(date: String = ""): CosplayPreview {
         isDownloaded = downloadedAt != null,
         downloadedAt = downloadedAt,
         downloadTime = downloadedAt?.let { convertTime(it) },
-        isViewed = viewedAt == null,
+        isViewed = viewedAt != null,
         type = if (type == CosplayMediaType.IMAGES) CosplayMediaType.Images else CosplayMediaType.Video
     )
 }

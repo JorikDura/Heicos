@@ -98,25 +98,25 @@ class CosplayRepositoryImpl @Inject constructor(
                 CosplayType.NewAsian -> {
                     getCosplaysByType(
                         url = "${BuildConfig.asianUrl}/search/page/$page/",
+                        domain = BuildConfig.asianUrl,
                         showDownloaded = showDownloaded,
-                        flowCollector = this,
-                        type = CosplayMediaType.Video
+                        flowCollector = this
                     )
                 }
                 CosplayType.RankingAsian -> {
                     getCosplaysByType(
                         url = "${BuildConfig.asianUrl}/ranking/page/$page/",
+                        domain = BuildConfig.asianUrl,
                         showDownloaded = showDownloaded,
-                        flowCollector = this,
-                        type = CosplayMediaType.Video
+                        flowCollector = this
                     )
                 }
                 CosplayType.RecentlyAsian -> {
                     getCosplaysByType(
                         url = "${BuildConfig.asianUrl}/recently/page/$page/",
+                        domain = BuildConfig.asianUrl,
                         showDownloaded = showDownloaded,
-                        flowCollector = this,
-                        type = CosplayMediaType.Video
+                        flowCollector = this
                     )
                 }
             }
@@ -130,8 +130,7 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             try {
                 val result = mutableListOf<String>()
-                val fullUrl = "${BuildConfig.baseUrl}$url"
-                val doc = Jsoup.connect(fullUrl).get()
+                val doc = Jsoup.connect(url).get()
 
                 doc.select("amp-img.auto-style").forEach { image ->
                     var imageUrl = image.attr("src")
@@ -239,6 +238,7 @@ class CosplayRepositoryImpl @Inject constructor(
 
     private suspend fun getCosplaysFromUrl(
         url: String,
+        domain: String,
         showDownloaded: Boolean,
         type: CosplayMediaType
     ): List<CosplayPreview> {
@@ -256,12 +256,12 @@ class CosplayRepositoryImpl @Inject constructor(
         val imageList = doc.select("div.image-list-item")
         for (i in 0 until imageList.size) {
             val pageUrl =
-                BuildConfig.baseUrl + imageList.select("div.image-list-item-image")
+                domain + imageList.select("div.image-list-item-image")
                     .select("a")
                     .eq(i)
                     .attr("href")
 
-            val storyPageUrl = imageList.select("div.image-list-item-image")
+            val storyPageUrl = domain + imageList.select("div.image-list-item-image")
                 .select("a")
                 .eq(i)
                 .attr("href")
@@ -324,6 +324,7 @@ class CosplayRepositoryImpl @Inject constructor(
 
     private suspend fun getCosplaysByType(
         url: String,
+        domain: String = BuildConfig.baseUrl,
         showDownloaded: Boolean,
         flowCollector: FlowCollector<Resource<List<CosplayPreview>>>,
         type: CosplayMediaType = CosplayMediaType.Images,
@@ -331,6 +332,7 @@ class CosplayRepositoryImpl @Inject constructor(
         val result = try {
             getCosplaysFromUrl(
                 url = url,
+                domain = domain,
                 showDownloaded = showDownloaded,
                 type = type
             )
