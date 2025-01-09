@@ -31,7 +31,7 @@ android {
         minSdk = 27
         targetSdk = 34
         versionCode = 1
-        versionName = "2.0.2"
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -153,7 +153,10 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
+    //ffmpeg
     implementation("com.arthenica:ffmpeg-kit-https:6.0-2")
+    //ketch
+    implementation("com.github.khushpanchal:Ketch:2.0.2")
     //foundation
     //implementation("androidx.compose.foundation:foundation:1.6.2")
 }

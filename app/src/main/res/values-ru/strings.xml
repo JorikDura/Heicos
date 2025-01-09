@@ -56,5 +56,9 @@
     <string name="video_packs">Видео паки 🤔</string>
     <string name="asian_packs">Азиатские паки 😌</string>
     <string name="history">История 🥱</string>
+    <string name="show_cosplays_images_download_notifications">Отображать уведомления о скаченых косплеях</string>
+    <string name="notifications">Уведомления</string>
+    <string name="the_changes_will_be_active_only_after_the_application_restart">Изменения вступят в силу после перезапуска приложения.</string>
+
 
 </resources>

@@ -1,26 +1,39 @@
 package com.heicos.presentation.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heicos.data.database.entities.CosplayPreviewEntity
 import com.heicos.data.database.entities.SearchQueryEntity
 import com.heicos.domain.repository.BackupRepository
 import com.heicos.presentation.settings.types.BackupTypes
+import com.heicos.presentation.util.IS_NOTIFICATION_ENABLED
+import com.heicos.presentation.util.SETTINGS
 import com.heicos.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    private val backupRepository: BackupRepository
+    private val backupRepository: BackupRepository,
+    private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsScreenState())
     val state = _state.asStateFlow()
+
+    init {
+        val isNotificationsEnabled = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
+            .getBoolean(IS_NOTIFICATION_ENABLED, false)
+        _state.update {
+            it.copy(isNotificationEnabled = isNotificationsEnabled)
+        }
+    }
 
     fun onEvent(event: SettingsScreenEvents) {
         when (event) {
@@ -56,6 +69,13 @@ class SettingsScreenViewModel @Inject constructor(
                     }
                 }
             }
+
+            is SettingsScreenEvents.ChangeNotificationSetting -> {
+                context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE).edit().apply {
+                    putBoolean(IS_NOTIFICATION_ENABLED, event.isEnabled)
+                    commit()
+                }
+            }
         }
     }
 
@@ -75,17 +95,19 @@ class SettingsScreenViewModel @Inject constructor(
         when (status) {
             is Resource.Error -> {
                 status.message?.let { message ->
-                    _state.value = _state.value.copy(
-                        isError = true,
-                        errorMessage = message
-                    )
+                    _state.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = message
+                        )
+                    }
                 }
             }
 
             else -> {
-                _state.value = _state.value.copy(
-                    isSuccess = true
-                )
+                _state.update {
+                    it.copy(isSuccess = true)
+                }
             }
         }
     }

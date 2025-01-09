@@ -56,5 +56,8 @@
     <string name="video_packs">Video packs 🤔</string>
     <string name="asian_packs">Asian packs 😌</string>
     <string name="history">History 🥱</string>
+    <string name="show_cosplays_images_download_notifications">Notify cosplay image downloads</string>
+    <string name="notifications">Notifications</string>
+    <string name="the_changes_will_be_active_only_after_the_application_restart">The changes will be active only after the application restart.</string>
 
 </resources>

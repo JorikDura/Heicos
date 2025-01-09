@@ -38,9 +38,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.heicos.R
 import com.heicos.presentation.destinations.AboutScreenDestination
 import com.heicos.presentation.settings.types.BackupTypes
+import com.heicos.presentation.util.CheckBox
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -97,7 +100,8 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(12.dp)
+                .padding(6.dp)
+                .padding(horizontal = 12.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             LaunchedEffect(state.value) {
@@ -146,11 +150,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     })
             }
 
-            Spacer(Modifier.height(12.dp))
-
-            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
-
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
             Text(text = stringResource(R.string.view_download_history))
 
@@ -165,11 +165,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            Spacer(Modifier.height(12.dp))
-
-            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
-
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
             Text(text = stringResource(R.string.search_history_backup))
 
@@ -184,22 +180,14 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            Spacer(Modifier.height(12.dp))
-
-            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
-
-            Spacer(Modifier.height(24.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
             Text(
                 text = stringResource(R.string.truncate),
                 fontSize = 24.sp
             )
 
-            Spacer(Modifier.height(12.dp))
-
-            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
-
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
             Text(text = stringResource(R.string.view_download_history))
 
@@ -214,11 +202,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     Text(text = stringResource(R.string.clear))
                 })
 
-            Spacer(Modifier.height(12.dp))
-
-            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
-
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
             Text(text = stringResource(R.string.search_history_backup))
 
@@ -233,12 +217,45 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     Text(text = stringResource(R.string.clear))
                 })
 
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
 
-            Box(
+            Text(
+                text = stringResource(R.string.notifications),
+                fontSize = 24.sp
+            )
+
+            var checkBoxState by remember {
+                mutableStateOf(state.value.isNotificationEnabled)
+            }
+
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
+
+            val notificationInfoDialog = remember {
+                mutableStateOf(false)
+            }
+
+            if (notificationInfoDialog.value) {
+                InfoDialog(
+                    isOpen = notificationInfoDialog,
+                    text = stringResource(R.string.the_changes_will_be_active_only_after_the_application_restart)
+                )
+            }
+
+            CheckBox(
                 modifier = Modifier
-                    .weight(1f)
-            ) {
+                    .padding(horizontal = 12.dp),
+                checkedState = checkBoxState,
+                text = stringResource(R.string.show_cosplays_images_download_notifications),
+                onClickListener = {
+                    checkBoxState = !checkBoxState
+                    notificationInfoDialog.value = true
+                    viewModel.onEvent(SettingsScreenEvents.ChangeNotificationSetting(checkBoxState))
+                }
+            )
+
+            HorizontalDivider(Modifier.padding(vertical = 24.dp))
+
+            Box {
                 TextButton(
                     modifier = Modifier
                         .align(Alignment.BottomCenter),

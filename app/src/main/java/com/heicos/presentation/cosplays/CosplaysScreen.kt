@@ -2,7 +2,6 @@ package com.heicos.presentation.cosplays
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -26,7 +25,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -38,7 +36,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
@@ -74,7 +71,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -91,6 +87,7 @@ import com.heicos.presentation.cosplays.types.CosplayTypes
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
 import com.heicos.presentation.destinations.FullVideoCosplayDestination
 import com.heicos.presentation.destinations.SettingsScreenDestination
+import com.heicos.presentation.util.CheckBox
 import com.heicos.presentation.util.ErrorMessage
 import com.heicos.presentation.util.LoadingScreen
 import com.heicos.presentation.util.SwipeToDeleteContainer
@@ -703,35 +700,4 @@ private fun NavigationItem(
     )
 }
 
-@Composable
-fun CheckBox(
-    modifier: Modifier = Modifier,
-    checkedState: Boolean,
-    text: String,
-    onClickListener: () -> Unit
-) {
-    Crossfade(targetState = checkedState, label = "checkbox_animation") { checked ->
-        Row(
-            modifier = modifier
-                .toggleable(
-                    value = checkedState,
-                    onValueChange = {
-                        onClickListener()
-                    },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Checkbox(
-                checked = checked,
-                onCheckedChange = null
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
-    }
-}
+

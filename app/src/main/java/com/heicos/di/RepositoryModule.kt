@@ -6,7 +6,7 @@ import com.heicos.domain.repository.BackupRepository
 import com.heicos.domain.repository.CosplayRepository
 import com.heicos.utils.manager.ConnectivityObserver
 import com.heicos.utils.manager.CosplayDownloader
-import com.heicos.utils.manager.CosplayDownloaderImpl
+import com.heicos.utils.manager.KetchDownloaderImpl
 import com.heicos.utils.manager.NetworkConnectivityObserver
 import dagger.Binds
 import dagger.Module
@@ -27,7 +27,7 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindDownloader(
-        downloader: CosplayDownloaderImpl
+        downloader: KetchDownloaderImpl
     ): CosplayDownloader
 
     @Singleton

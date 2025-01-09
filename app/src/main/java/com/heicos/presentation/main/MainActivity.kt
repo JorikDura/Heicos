@@ -1,6 +1,12 @@
 package com.heicos.presentation.main
 
+import android.app.NotificationManager
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -47,6 +53,31 @@ class MainActivity : ComponentActivity() {
                         darkIcons = !isDarkTheme
                     )
                 }
+
+                var permissions = arrayOf<String>()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !getSystemService(
+                        NotificationManager::class.java).areNotificationsEnabled()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissions = permissions.plus(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                    Intent().apply {
+                        action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                    }.also {
+                        startActivity(it)
+                    }
+                } else if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                        permissions = permissions.plus(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
+                }
+
+                if (permissions.isNotEmpty()) {
+                    requestPermissions(permissions, 101)
+                }
+
                 Surface(
                     modifier = Modifier
                         .statusBarsPadding()
