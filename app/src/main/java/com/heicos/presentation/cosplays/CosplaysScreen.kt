@@ -171,6 +171,12 @@ fun CosplaysScreen(
         CosplayTypes.RankingVideo
     )
 
+    val imageAsianCosplays = listOf(
+        CosplayTypes.NewAsian,
+        CosplayTypes.RankingAsian,
+        CosplayTypes.RecentlyAsian
+    )
+
     DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -209,6 +215,27 @@ fun CosplaysScreen(
                 HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
 
                 videoCosplays.forEach { cosplay ->
+                    NavigationItem(cosplay, state) {
+                        if (state.currentCosplayType != cosplay.cosplayType) {
+                            page = 1
+                            scope.launch { drawerState.close() }
+                            query = ""
+                            viewModel.onEvent(CosplaysScreenEvents.ChangeCosplayType(cosplay.cosplayType))
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                Text(
+                    modifier = Modifier
+                        .padding(all = 12.dp),
+                    text = "Asian packs 😌"
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
+                imageAsianCosplays.forEach { cosplay ->
                     NavigationItem(cosplay, state) {
                         if (state.currentCosplayType != cosplay.cosplayType) {
                             page = 1
@@ -341,8 +368,11 @@ fun CosplaysScreen(
                         .padding(start = 12.dp),
                     text = stringResource(R.string.filters)
                 )
-                Spacer(Modifier.height(12.dp))
+
+                HorizontalDivider(modifier = Modifier.padding(all = 12.dp))
+
                 var reverseCheckedState by remember { mutableStateOf(state.reversedMode) }
+
                 CheckBox(
                     modifier = Modifier
                         .padding(horizontal = 12.dp),

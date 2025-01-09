@@ -81,12 +81,22 @@ android {
                 name = "baseUrl",
                 value = "\"https://hentai-cosplay-xxx.com\""
             )
+            buildConfigField(
+                type = "String",
+                name = "asianUrl",
+                value = "\"https://porn-image.com\""
+            )
         }
         debug {
             buildConfigField(
                 type = "String",
                 name = "baseUrl",
                 value = "\"https://hentai-cosplay-xxx.com\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "asianUrl",
+                value = "\"https://porn-image.com\""
             )
         }
     }

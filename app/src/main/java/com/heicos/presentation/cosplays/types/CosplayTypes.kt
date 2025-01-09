@@ -54,6 +54,24 @@ enum class CosplayTypes(
         icon = Icons.Outlined.Favorite,
         cosplayType = CosplayType.RankingVideo
     ),
+    NewAsian(
+        title = R.string.navigation_item_new,
+        selectedIcon = Icons.TwoTone.Home,
+        icon = Icons.Outlined.Home,
+        cosplayType = CosplayType.NewAsian
+    ),
+    RankingAsian(
+        title = R.string.navigation_item_ranking,
+        selectedIcon = Icons.TwoTone.Star,
+        icon = Icons.Outlined.Star,
+        cosplayType = CosplayType.RankingAsian
+    ),
+    RecentlyAsian(
+        title = R.string.navigation_item_recently,
+        selectedIcon = Icons.TwoTone.Refresh,
+        icon = Icons.Outlined.Refresh,
+        cosplayType = CosplayType.RecentlyAsian
+    ),
     RecentlyViewed(
         title = R.string.navigation_item_recently_viewed,
         selectedIcon = Icons.TwoTone.Info,

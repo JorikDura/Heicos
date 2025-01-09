@@ -94,6 +94,31 @@ class CosplayRepositoryImpl @Inject constructor(
 
                     emit(Resource.Success(data = result))
                 }
+
+                CosplayType.NewAsian -> {
+                    getCosplaysByType(
+                        url = "${BuildConfig.asianUrl}/search/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this,
+                        type = CosplayMediaType.Video
+                    )
+                }
+                CosplayType.RankingAsian -> {
+                    getCosplaysByType(
+                        url = "${BuildConfig.asianUrl}/ranking/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this,
+                        type = CosplayMediaType.Video
+                    )
+                }
+                CosplayType.RecentlyAsian -> {
+                    getCosplaysByType(
+                        url = "${BuildConfig.asianUrl}/recently/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this,
+                        type = CosplayMediaType.Video
+                    )
+                }
             }
             emit(Resource.Loading(isLoading = false))
         }

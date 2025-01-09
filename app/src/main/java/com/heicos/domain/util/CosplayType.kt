@@ -8,4 +8,7 @@ sealed class CosplayType {
     data object NewVideo : CosplayType()
     data object RankingVideo : CosplayType()
     data object RecentlyViewed : CosplayType()
+    data object RecentlyAsian : CosplayType()
+    data object NewAsian : CosplayType()
+    data object RankingAsian : CosplayType()
 }
