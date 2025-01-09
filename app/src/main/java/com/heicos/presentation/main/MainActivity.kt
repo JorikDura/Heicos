@@ -55,10 +55,10 @@ class MainActivity : ComponentActivity() {
                 }
 
                 var permissions = arrayOf<String>()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !getSystemService(
-                        NotificationManager::class.java).areNotificationsEnabled()) {
+                if (!getSystemService(NotificationManager::class.java).areNotificationsEnabled()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissions = permissions.plus(android.Manifest.permission.POST_NOTIFICATIONS)
+                        permissions =
+                            permissions.plus(android.Manifest.permission.POST_NOTIFICATIONS)
                     }
                 }
 
@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
                     }
                 } else if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                        permissions = permissions.plus(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        permissions =
+                            permissions.plus(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     }
                 }
 
