@@ -1,5 +1,7 @@
 package com.heicos.presentation.full_video_cosplay
 
+import android.content.Context
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import androidx.annotation.OptIn
@@ -38,6 +40,7 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
     private val findCosplayPreviewUseCase: FindCosplayPreviewUseCase,
     private val insertCosplayPreviewUseCase: InsertCosplayPreviewUseCase,
     private val updateCosplayPreviewUseCase: UpdateCosplayPreviewUseCase,
+    private val context: Context,
     val player: ExoPlayer
 ) : ViewModel() {
 
@@ -158,6 +161,13 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
                             isError = false
                         )
                     }
+
+                    MediaScannerConnection.scanFile(
+                        context,
+                        arrayOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Heicos/"),
+                        null,
+                        null
+                    )
                 }
 
                 else -> Unit
