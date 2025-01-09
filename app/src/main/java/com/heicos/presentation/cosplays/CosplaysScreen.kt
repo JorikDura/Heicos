@@ -85,6 +85,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.heicos.R
+import com.heicos.domain.util.CosplayMediaType
 import com.heicos.domain.util.CosplayType
 import com.heicos.presentation.cosplays.types.CosplayTypes
 import com.heicos.presentation.destinations.FullCosplayScreenDestination
@@ -508,7 +509,7 @@ fun CosplaysScreen(
                                 cosplay = cosplay,
                                 navController = navController,
                                 onItemClickListener = {
-                                    if (state.currentCosplayType is CosplayType.NewVideo) {
+                                    if (cosplay.type is CosplayMediaType.Video) {
                                         navigator.navigate(
                                             FullVideoCosplayDestination(
                                                 cosplayPreview = cosplay

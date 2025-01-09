@@ -9,10 +9,12 @@ import com.heicos.data.mapper.toSearchQueryEntity
 import com.heicos.domain.model.CosplayPreview
 import com.heicos.domain.model.SearchQuery
 import com.heicos.domain.repository.CosplayRepository
+import com.heicos.domain.util.CosplayMediaType
 import com.heicos.domain.util.CosplayType
 import com.heicos.utils.Resource
 import com.heicos.utils.time.convertTime
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 import org.jsoup.HttpStatusException
@@ -32,108 +34,53 @@ class CosplayRepositoryImpl @Inject constructor(
             emit(Resource.Loading(isLoading = true))
             when (cosplayType) {
                 CosplayType.New -> {
-                    val url = "${BuildConfig.baseUrl}/search/page/$page/"
-                    val result = try {
-                        getCosplaysFromUrl(url, showDownloaded)
-                    } catch (e: HttpStatusException) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    } catch (e: Exception) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    }
-                    result?.let {
-                        emit(Resource.Success(data = result))
-                    }
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/search/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this
+                    )
                 }
 
                 CosplayType.Ranking -> {
-                    val url = "${BuildConfig.baseUrl}/ranking/page/$page/"
-                    val result = try {
-                        getCosplaysFromUrl(url, showDownloaded)
-                    } catch (e: HttpStatusException) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    } catch (e: Exception) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    }
-                    result?.let {
-                        emit(Resource.Success(data = result))
-                    }
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/ranking/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this
+                    )
                 }
 
                 CosplayType.Recently -> {
-                    val url = "${BuildConfig.baseUrl}/recently/page/$page/"
-                    val result = try {
-                        getCosplaysFromUrl(url, showDownloaded)
-                    } catch (e: HttpStatusException) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    } catch (e: Exception) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    }
-                    result?.let {
-                        emit(Resource.Success(data = result))
-                    }
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/recently/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this
+                    )
                 }
 
                 is CosplayType.Search -> {
-                    val url =
-                        "${BuildConfig.baseUrl}/search/keyword/${cosplayType.query}/page/$page/"
-                    val result = try {
-                        getCosplaysFromUrl(url, showDownloaded)
-                    } catch (e: HttpStatusException) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    } catch (e: Exception) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    }
-                    result?.let {
-                        emit(Resource.Success(data = result))
-                    }
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/search/keyword/${cosplayType.query}/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this
+                    )
+                }
+
+                CosplayType.NewVideo -> {
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/search-video/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this,
+                        type = CosplayMediaType.Video
+                    )
+                }
+
+                CosplayType.RankingVideo -> {
+                    getCosplaysByType(
+                        url = "${BuildConfig.baseUrl}/ranking-video/page/$page/",
+                        showDownloaded = showDownloaded,
+                        flowCollector = this,
+                        type = CosplayMediaType.Video
+                    )
                 }
 
                 CosplayType.RecentlyViewed -> {
@@ -142,7 +89,8 @@ class CosplayRepositoryImpl @Inject constructor(
                     val databaseCosplays = dataBase.cosplayDao.getRecentlyViewedCosplays(offset)
 
                     val result = databaseCosplays.map { cosplay ->
-                        with(cosplay) {
+                        cosplay.toCosplayPreview()
+                        /*with(cosplay) {
                             CosplayPreview(
                                 pageUrl = url,
                                 storyPageUrl = storyPageUrl,
@@ -151,41 +99,16 @@ class CosplayRepositoryImpl @Inject constructor(
                                 isViewed = true,
                                 isDownloaded = downloadedAt != null
                             )
-                        }
+                        }*/
                     }
 
                     emit(Resource.Success(data = result))
-                }
-
-                CosplayType.NewVideo -> {
-                    val url = "${BuildConfig.baseUrl}/search-video/page/$page/"
-                    val result = try {
-                        getCosplaysFromUrl(url, showDownloaded)
-                    } catch (e: HttpStatusException) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    } catch (e: Exception) {
-                        emit(
-                            Resource.Error(
-                                message = e.message ?: ERROR_MESSAGE,
-                                data = emptyList()
-                            )
-                        )
-                        null
-                    }
-                    result?.let {
-                        emit(Resource.Success(data = result))
-                    }
                 }
             }
             emit(Resource.Loading(isLoading = false))
         }
     }
+
 
     override suspend fun getFullCosplay(url: String): Flow<Resource<List<String>>> {
         return flow {
@@ -301,7 +224,8 @@ class CosplayRepositoryImpl @Inject constructor(
 
     private suspend fun getCosplaysFromUrl(
         url: String,
-        showDownloaded: Boolean
+        showDownloaded: Boolean,
+        type: CosplayMediaType
     ): List<CosplayPreview> {
         val result = mutableListOf<CosplayPreview>()
         val doc = Jsoup.connect(url).get()
@@ -355,6 +279,7 @@ class CosplayRepositoryImpl @Inject constructor(
                     previewUrl = image,
                     title = title,
                     date = date,
+                    type = type
                 )
             )
         }
@@ -380,6 +305,40 @@ class CosplayRepositoryImpl @Inject constructor(
         }
 
         return result
+    }
+
+    private suspend fun getCosplaysByType(
+        url: String,
+        showDownloaded: Boolean,
+        flowCollector: FlowCollector<Resource<List<CosplayPreview>>>,
+        type: CosplayMediaType = CosplayMediaType.Images,
+    ) {
+        val result = try {
+            getCosplaysFromUrl(
+                url = url,
+                showDownloaded = showDownloaded,
+                type = type
+            )
+        } catch (e: HttpStatusException) {
+            flowCollector.emit(
+                Resource.Error(
+                    message = e.message ?: ERROR_MESSAGE,
+                    data = emptyList()
+                )
+            )
+            null
+        } catch (e: Exception) {
+            flowCollector.emit(
+                Resource.Error(
+                    message = e.message ?: ERROR_MESSAGE,
+                    data = emptyList()
+                )
+            )
+            null
+        }
+        result?.let {
+            flowCollector.emit(Resource.Success(data = result))
+        }
     }
 
     companion object {

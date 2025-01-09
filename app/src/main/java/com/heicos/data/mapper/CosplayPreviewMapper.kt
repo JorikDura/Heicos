@@ -2,6 +2,7 @@ package com.heicos.data.mapper
 
 import com.heicos.data.database.entities.CosplayPreviewEntity
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.util.CosplayMediaType
 import com.heicos.utils.time.convertTime
 
 fun CosplayPreview.toCosplayPreviewEntity(
@@ -15,21 +16,23 @@ fun CosplayPreview.toCosplayPreviewEntity(
         url = pageUrl,
         previewUrl = previewUrl,
         storyPageUrl = storyPageUrl,
-        viewedAt = time
+        viewedAt = time,
+        type = if (type is CosplayMediaType.Images) CosplayMediaType.IMAGES else CosplayMediaType.VIDEO
     )
 }
 
-fun CosplayPreviewEntity.toCosplayPreview(data: String = ""): CosplayPreview {
+fun CosplayPreviewEntity.toCosplayPreview(date: String = ""): CosplayPreview {
     return CosplayPreview(
         id = id,
         pageUrl = url,
         storyPageUrl = storyPageUrl,
         previewUrl = previewUrl,
         title = name,
-        date = data,
+        date = date,
         isDownloaded = downloadedAt != null,
         downloadedAt = downloadedAt,
         downloadTime = downloadedAt?.let { convertTime(it) },
-        isViewed = viewedAt == null
+        isViewed = viewedAt == null,
+        type = if (type == CosplayMediaType.IMAGES) CosplayMediaType.Images else CosplayMediaType.Video
     )
 }

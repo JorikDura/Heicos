@@ -5,5 +5,7 @@ import com.heicos.domain.model.CosplayPreview
 data class FullVideoCosplayState(
     val cosplayPreview: CosplayPreview = CosplayPreview(),
     val videoUrl: String = "",
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isError: Boolean = false,
+    val isDownloadedSuccessful: Boolean = false
 )

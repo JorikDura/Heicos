@@ -14,8 +14,12 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.SessionState
 import com.heicos.domain.model.CosplayPreview
+import com.heicos.domain.use_case.FindCosplayPreviewUseCase
 import com.heicos.domain.use_case.GetFullVideoCosplayUseCase
+import com.heicos.domain.use_case.InsertCosplayPreviewUseCase
+import com.heicos.domain.use_case.UpdateCosplayPreviewUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,16 +36,21 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
 @Inject constructor(
     private val getFullVideoCosplayUseCase: GetFullVideoCosplayUseCase,
     private val savedState: SavedStateHandle,
+    private val findCosplayPreviewUseCase: FindCosplayPreviewUseCase,
+    private val insertCosplayPreviewUseCase: InsertCosplayPreviewUseCase,
+    private val updateCosplayPreviewUseCase: UpdateCosplayPreviewUseCase,
     val player: ExoPlayer
 ) : ViewModel() {
+
+    private var cosplayPreview: CosplayPreview
 
     private val _state = MutableStateFlow(FullVideoCosplayState())
     val state = _state.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val cosplayPreview = getCosplayPreview()
+        cosplayPreview = getCosplayPreview()
 
+        viewModelScope.launch(Dispatchers.IO) {
             val videoUrl = getFullVideoCosplayUseCase(cosplayPreview.pageUrl)
             _state.update {
                 it.copy(
@@ -72,30 +81,35 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
                 player.prepare()
             }
         }
+
+        viewModelScope.launch {
+            val preview = findCosplayPreviewUseCase(cosplayPreview.pageUrl)
+
+            cosplayPreview.id = preview?.id ?: 0
+            preview?.downloadedAt?.let {
+                cosplayPreview.downloadedAt = it
+            }
+
+            if (cosplayPreview.id == 0.toLong()) {
+                val id = insertCosplayPreviewUseCase(
+                    cosplayPreview = cosplayPreview,
+                    time = System.currentTimeMillis()
+                )
+                cosplayPreview.id = id
+            } else {
+                updateCosplayPreviewUseCase(
+                    cosplayPreview = cosplayPreview,
+                    time = System.currentTimeMillis()
+                )
+            }
+        }
     }
 
     @OptIn(UnstableApi::class)
     fun onEvent(event: FullVideoCosplayEvents) {
         when (event) {
             FullVideoCosplayEvents.Download -> {
-                val exportDir =
-                    File(getExternalStorageDirectory().toString() + "/" + Environment.DIRECTORY_DOWNLOADS + "/Heicos/")
-
-                if (!exportDir.exists()) {
-                    exportDir.mkdirs()
-                }
-
-                val file = File(exportDir, _state.value.cosplayPreview.title + ".mp4")
-
-                val cmd = String.format(
-                    "-i %s -c copy \"%s\"",
-                    _state.value.videoUrl,
-                    file
-                )
-
-                viewModelScope.launch(Dispatchers.IO) {
-                    FFmpegKit.execute(cmd)
-                }
+                downloadVideo()
             }
         }
     }
@@ -105,8 +119,59 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
         player.release()
     }
 
+    private fun downloadVideo() {
+        val exportDir =
+            File(getExternalStorageDirectory().toString() + "/" + Environment.DIRECTORY_DOWNLOADS + "/Heicos/")
+
+        if (!exportDir.exists()) {
+            exportDir.mkdirs()
+        }
+
+        val file = File(exportDir, _state.value.cosplayPreview.title + ".mp4")
+
+        val command = String.format(COMMAND, _state.value.videoUrl, file)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val mpeg = FFmpegKit.execute(command)
+            when (mpeg.state) {
+                SessionState.FAILED -> {
+                    _state.update {
+                        it.copy(
+                            isDownloadedSuccessful = false,
+                            isError = true
+                        )
+                    }
+                }
+
+                SessionState.COMPLETED -> {
+                    _state.update {
+                        it.copy(
+                            isDownloadedSuccessful = true,
+                            isError = false
+                        )
+                    }
+                    cosplayPreview.isDownloaded = true
+                    val time = System.currentTimeMillis()
+                    viewModelScope.launch {
+                        updateCosplayPreviewUseCase(
+                            cosplayPreview = cosplayPreview,
+                            time = time,
+                            isDownloaded = true
+                        )
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
     private fun getCosplayPreview(): CosplayPreview {
         return savedState.get<CosplayPreview>("cosplayPreview")
             ?: throw IllegalArgumentException("Argument can't be null")
+    }
+
+    companion object {
+        private const val COMMAND = "-i %s -c copy \"%s\""
     }
 }

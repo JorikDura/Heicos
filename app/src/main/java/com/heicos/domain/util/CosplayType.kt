@@ -5,6 +5,7 @@ sealed class CosplayType {
     data object New : CosplayType()
     data object Ranking : CosplayType()
     data class Search(val query: String) : CosplayType()
-    data object RecentlyViewed : CosplayType()
     data object NewVideo : CosplayType()
+    data object RankingVideo : CosplayType()
+    data object RecentlyViewed : CosplayType()
 }
