@@ -90,16 +90,6 @@ class CosplayRepositoryImpl @Inject constructor(
 
                     val result = databaseCosplays.map { cosplay ->
                         cosplay.toCosplayPreview()
-                        /*with(cosplay) {
-                            CosplayPreview(
-                                pageUrl = url,
-                                storyPageUrl = storyPageUrl,
-                                previewUrl = previewUrl,
-                                title = name,
-                                isViewed = true,
-                                isDownloaded = downloadedAt != null
-                            )
-                        }*/
                     }
 
                     emit(Resource.Success(data = result))
