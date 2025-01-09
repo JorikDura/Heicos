@@ -12,7 +12,7 @@ class CosplayDownloaderImpl @Inject constructor(
 ) : CosplayDownloader {
 
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
-    override fun downloadFile(url: String, name: String): Long {
+    override suspend fun downloadFile(url: String, name: String): Long {
         val fileType = url.reversed().substringBefore("/").reversed()
         val id = url.reversed().substringAfter("/").substringBefore("/").reversed()
         var fileName = if (name.isNotEmpty()) {
