@@ -2,7 +2,6 @@ package com.heicos.presentation.full_video_cosplay
 
 import android.net.Uri
 import android.os.Environment
-import android.os.Environment.getExternalStorageDirectory
 import androidx.annotation.OptIn
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -121,7 +120,7 @@ class FullVideoCosplayViewModel @OptIn(UnstableApi::class)
 
     private fun downloadVideo() {
         val exportDir =
-            File(getExternalStorageDirectory().toString() + "/" + Environment.DIRECTORY_DOWNLOADS + "/Heicos/")
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Heicos/")
 
         if (!exportDir.exists()) {
             exportDir.mkdirs()
