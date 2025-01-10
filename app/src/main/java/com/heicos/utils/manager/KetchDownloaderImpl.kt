@@ -65,7 +65,7 @@ class KetchDownloaderImpl @Inject constructor(
         }
 
         fileName = fileName.replace(
-            regex = Regex("['\"\\[\\]]*"),
+            regex = Regex("['\"\\[\\]:]*"),
             replacement = ""
         )
 
