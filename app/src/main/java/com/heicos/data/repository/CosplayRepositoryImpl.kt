@@ -156,9 +156,9 @@ class CosplayRepositoryImpl @Inject constructor(
         val doc = Jsoup.connect(url).get()
 
         val video = doc.select("video#video_1")
-        val url = video.select("source").attr("src")
+        val videoUrl = video.select("source").attr("src")
 
-        return url
+        return videoUrl
     }
 
     override suspend fun getCosplayTags(url: String): Flow<Resource<List<String>>> {
