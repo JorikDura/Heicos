@@ -25,6 +25,7 @@ class CosplayRepositoryImpl @Inject constructor(
     private val dataBase: CosplaysDataBase
 ) : CosplayRepository {
     private var lastPage: Int? = null
+    private var lastUsedCosplayType: CosplayType = CosplayType.New
     override suspend fun getCosplays(
         page: Int,
         cosplayType: CosplayType,
@@ -58,10 +59,16 @@ class CosplayRepositoryImpl @Inject constructor(
                 }
 
                 is CosplayType.Search -> {
+                    val domain = if (lastUsedCosplayType is CosplayType.NewAsian ||
+                        lastUsedCosplayType is CosplayType.RankingAsian ||
+                        lastUsedCosplayType is CosplayType.RecentlyAsian
+                    ) BuildConfig.asianUrl else BuildConfig.baseUrl
+
                     getCosplaysByType(
-                        url = "${BuildConfig.baseUrl}/search/keyword/${cosplayType.query}/page/$page/",
+                        url = "$domain/search/keyword/${cosplayType.query}/page/$page/",
                         showDownloaded = showDownloaded,
-                        flowCollector = this
+                        flowCollector = this,
+                        domain = domain
                     )
                 }
 
@@ -103,6 +110,7 @@ class CosplayRepositoryImpl @Inject constructor(
                         flowCollector = this
                     )
                 }
+
                 CosplayType.RankingAsian -> {
                     getCosplaysByType(
                         url = "${BuildConfig.asianUrl}/ranking/page/$page/",
@@ -111,6 +119,7 @@ class CosplayRepositoryImpl @Inject constructor(
                         flowCollector = this
                     )
                 }
+
                 CosplayType.RecentlyAsian -> {
                     getCosplaysByType(
                         url = "${BuildConfig.asianUrl}/recently/page/$page/",
@@ -120,6 +129,9 @@ class CosplayRepositoryImpl @Inject constructor(
                     )
                 }
             }
+
+            lastUsedCosplayType = cosplayType
+
             emit(Resource.Loading(isLoading = false))
         }
     }
