@@ -18,6 +18,11 @@ I don't take responsibility for content inside the app.
 
 For example, image quality may be bad or something can't be loaded because of cloudflare or more.
 
+There's some benefits on beta version:
+* Video packs support
+* Asian domain support
+* Download notification settings
+
 That's all.
 
 # Русский
@@ -39,6 +44,11 @@ That's all.
 
 За сам контент и его качество ответственности не несу.<br>
 Картинки могут быть плохого качества, а некоторые в принципе не загрузятся ввиду защиты на нескольких доменах с cloudflare.
+
+Преимущества бета-версии:
+* Поддержка видео паков
+* Поддержка asian домена
+* Настройка уведомлений о скачивании
 
 На этом все.
 
